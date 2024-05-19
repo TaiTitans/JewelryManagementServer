@@ -25,7 +25,7 @@ public class UserService {
 
    public UserDTO createUser(UserDTO userDTO){
         User user = convertToEntity(userDTO);
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setPassword(passwordEncoder.encode(userDTO.Password));
         user = userRepository.save(user);
         return convertToDto(user);
    }
@@ -33,8 +33,8 @@ public UserDTO updateUser(int id, UserDTO userDTO){
         if(userRepository.existsById(id)){
             User user = convertToEntity(userDTO);
             user.setIDUser(id);
-            if(!userDTO.getPassword().isEmpty()){
-                user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            if(!userDTO.Password.isEmpty()){
+                user.setPassword(passwordEncoder.encode(userDTO.Password));
             }
             user = userRepository.save(user);
             return convertToDto(user);
@@ -44,23 +44,23 @@ public UserDTO updateUser(int id, UserDTO userDTO){
 
     private UserDTO convertToDto(User user) {
         UserDTO userDTO = new UserDTO();
-        userDTO.setIDUser(user.getIDUser());
-        userDTO.setName(user.getName());
-        userDTO.setSex(user.getSex());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setPhone(user.getPhone());
-        userDTO.setRole(user.getRole());
-        userDTO.setPoint(user.getPoint());
+        userDTO.IDUser = user.getIDUser();
+        userDTO.Name = user.getName();
+        userDTO.Sex = user.getSex();
+        userDTO.Address = user.getAddress();
+        userDTO.Phone = user.getPhone();
+        userDTO.Role = user.getRole();
+        userDTO.Point = user.getPoint();
         return userDTO;
     }
     private User convertToEntity(UserDTO userDTO) {
         User user = new User();
-        user.setName(userDTO.getName());
-        user.setSex(userDTO.getSex());
-        user.setAddress(userDTO.getAddress());
-        user.setPhone(userDTO.getPhone());
-        user.setRole(userDTO.getRole());
-        user.setPoint(userDTO.getPoint());
+        user.setName(userDTO.Name);
+        user.setSex(userDTO.Sex);
+        user.setAddress(userDTO.Address);
+        user.setPhone(userDTO.Phone);
+        user.setRole(userDTO.Role);
+        user.setPoint(userDTO.Point);
         return user;
     }
     public void deleteUser(int id){

@@ -1,13 +1,15 @@
 package com.jewelrymanagement.dto;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-@Data
+import lombok.NoArgsConstructor;
+
 public class UserDTO {
-private int IDUser;
-private String Name;
-private byte Sex;
-private String Address;
-private String Phone;
-private String Role;
-private int Point;
-private String Password;
+    public int IDUser;
+    public String Name;
+    public byte Sex;
+    public String Address;
+    public String Phone;
+    public String Role;
+    public int Point;
+    public String Password;
 }

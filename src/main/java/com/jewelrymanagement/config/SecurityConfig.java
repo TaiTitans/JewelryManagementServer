@@ -20,29 +20,20 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests((requests) -> requests
-//                        .requestMatchers("/", "/home").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .formLogin((form) -> form
-//                        .loginPage("/login")
-//                        .permitAll()
-//                )
-//                .logout((logout) -> logout.permitAll());
-//
-//        return http.build();
-//    }
-//
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+       http.authorizeRequests().anyRequest().permitAll();
+
+        http.csrf().disable();
+        return http.build();
+    }
+
 //    @Bean
 //    public UserDetailsService userDetailsService() {
 //        UserDetails user =
 //                User.withDefaultPasswordEncoder()
-//                        .username("user")
-//                        .password("password")
-//                        .roles("USER")
+//                        .username("admin")
+//                        .password("admin")
 //                        .build();
 //
 //        return new InMemoryUserDetailsManager(user);

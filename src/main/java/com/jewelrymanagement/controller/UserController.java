@@ -22,9 +22,11 @@ public class UserController {
     public UserDTO getUserById(@PathVariable int id){
         return userService.getUserById(id);
     }
+
     @PostMapping
     public UserDTO createUser(@RequestBody UserDTO userDTO){
-        return userService.createUser(userDTO);
+        var response = userService.createUser(userDTO);
+        return response;
     }
 
     @PutMapping("/{id}")
