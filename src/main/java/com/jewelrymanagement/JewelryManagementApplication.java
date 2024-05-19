@@ -9,5 +9,4 @@ public class JewelryManagementApplication {
     public static void main(String[] args) {
         SpringApplication.run(JewelryManagementApplication.class, args);
     }
-
 }
