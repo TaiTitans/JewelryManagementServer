@@ -1,16 +1,14 @@
 package com.jewelrymanagement.service;
 import com.jewelrymanagement.dto.UserDTO;
 import com.jewelrymanagement.entity.User;
-import com.jewelrymanagement.exceptions.BaseException;
-import com.jewelrymanagement.exceptions.User.DeletedSuccess;
-import com.jewelrymanagement.exceptions.User.UserNotFoundException;
 import com.jewelrymanagement.repository.UserRepository;
+import com.jewelrymanagement.util.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.stream.Collectors;
 @Service
 public class UserService {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -18,33 +16,57 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    public List<UserDTO> getAllUsers(){
-        return userRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+    public StatusResponse<List<UserDTO>> getAllUsers(){
+       try{
+           List<User> users = userRepository.findAll();
+           List<UserDTO> userDTOs = users.stream().map(this::convertToDto).collect(Collectors.toList());
+           return new StatusResponse<>("Success", "User retrieved successfully",userDTOs);
+       }catch (Exception ex){
+           return new StatusResponse<>("Error", "An unexpected error occurred", null);
+       }
     }
 
-    public UserDTO getUserById(int id){
-        return userRepository.findById(id).map(this::convertToDto).orElseThrow(()-> new UserNotFoundException(id));
+    public StatusResponse<UserDTO> getUserById(int id) {
+        try {
+            Optional<User> userOptional = userRepository.findById(id);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                UserDTO userDTO = convertToDto(user);
+                return new StatusResponse<>("Success", "User found successfully", userDTO);
+            } else {
+                return new StatusResponse<>("Error", "User not found", null);
+            }
+        } catch (Exception ex) {
+            return new StatusResponse<>("Error", "An unexpected error occurred", null);
+        }
     }
 
-   public UserDTO createUser(UserDTO userDTO){
+
+    public UserDTO createUser(UserDTO userDTO){
         User user = convertToEntity(userDTO);
         user.setPassword(passwordEncoder.encode(userDTO.Password));
         user = userRepository.save(user);
         return convertToDto(user);
    }
-public UserDTO updateUser(int id, UserDTO userDTO){
-        if(userRepository.existsById(id)){
-            User user = convertToEntity(userDTO);
-            user.setIDUser(id);
-            if(!userDTO.Password.isEmpty()){
-                user.setPassword(passwordEncoder.encode(userDTO.Password));
-            }
-            user = userRepository.save(user);
-            return convertToDto(user);
-        }
-        return null;
-}
+public StatusResponse<UserDTO> updateUser(int id, UserDTO userDTO) {
+    try {
+       if(userRepository.existsById(id)){
+           User user = convertToEntity(userDTO);
+           user.setIDUser(id);
+           if(userDTO.Password!=null && !userDTO.Password.isEmpty()){
+               user.setPassword(passwordEncoder.encode(userDTO.Password));
+           }
+           user = userRepository.save(user);
+           UserDTO updatedUserDTO = convertToDto(user);
+           return new StatusResponse<>("Success", "User updated successfully", updatedUserDTO);
+       }else{
+           return new StatusResponse<>("Error", "User not found", null);
+       }
 
+    }catch (Exception ex){
+        return new StatusResponse<>("Error", "An unexpected error occurred", null);
+    }
+}
     private UserDTO convertToDto(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.IDUser = user.getIDUser();
@@ -66,12 +88,12 @@ public UserDTO updateUser(int id, UserDTO userDTO){
         user.setPoint(userDTO.Point);
         return user;
     }
-    public void deleteUser(int id) {
-        if (userRepository.existsById(id)) {
+    public StatusResponse<UserDTO> deleteUser(int id) {
+        try {
             userRepository.deleteById(id);
-            throw new DeletedSuccess(id);
-        } else {
-            throw new UserNotFoundException(id);
+            return new StatusResponse<>("Success", "User deleted successfully", null);
+        } catch (Exception ex) {
+            return new StatusResponse<>("Error", "Failed to delete user", null);
         }
     }
 

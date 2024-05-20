@@ -1,10 +1,9 @@
 package com.jewelrymanagement.controller;
 
 import com.jewelrymanagement.dto.UserDTO;
-import com.jewelrymanagement.exceptions.User.DeletedSuccess;
-import com.jewelrymanagement.exceptions.User.UserNotFoundException;
+import com.jewelrymanagement.entity.User;
 import com.jewelrymanagement.service.UserService;
-import com.jewelrymanagement.util.ErrorResponse;
+import com.jewelrymanagement.util.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.ConstraintViolationException;
@@ -20,18 +19,24 @@ public class UserController {
     @Autowired
     private UserService userService;
     @GetMapping
-    public List<UserDTO> getAllUsers(){
-        return userService.getAllUsers();
+    public ResponseEntity<StatusResponse<List<UserDTO>>> getAllUsers(){
+        StatusResponse<List<UserDTO>> response = userService.getAllUsers();
+        if("Success".equals(response.getStatus())){
+            return ResponseEntity.ok(response);
+        }else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable int id){
-        try {
-            UserDTO userDTO = userService.getUserById(id);
-            return ResponseEntity.ok(userDTO);
-        } catch(UserNotFoundException e) {
-            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    public ResponseEntity<StatusResponse<UserDTO>> getUserById(@PathVariable int id) {
+        StatusResponse<UserDTO> response = userService.getUserById(id);
+        if ("Success".equals(response.getStatus())) {
+            return ResponseEntity.ok(response);
+        } else if ("User not found".equals(response.getMessage())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
@@ -49,18 +54,23 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUser(@PathVariable int id, @RequestBody UserDTO userDTO){
-        return userService.updateUser(id, userDTO);
+    public ResponseEntity<StatusResponse<UserDTO>> updateUser(@PathVariable int id, @RequestBody UserDTO userDTO){
+        StatusResponse<UserDTO> response = userService.updateUser(id, userDTO);
+        if("Success".equals(response.getStatus())){
+            return ResponseEntity.ok(response);
+        }else if("User not found".equals(response.getMessage())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable int id) {
-        try {
-            userService.deleteUser(id);
-            throw new DeletedSuccess(id); // Ném DeletedSuccess để bắt lại thông điệp
-        } catch (DeletedSuccess ex) {
-            return ResponseEntity.ok(ex.getMessage()); // Trả về thông điệp từ ngoại lệ DeletedSuccess
-        } catch (UserNotFoundException ex) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<StatusResponse> deleteUser(@PathVariable int id) {
+        StatusResponse response = userService.deleteUser(id);
+        if(response.getMessage().equals("Success")){
+            return ResponseEntity.ok(response);
+        }else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
