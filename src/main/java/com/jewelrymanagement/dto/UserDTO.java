@@ -12,4 +12,6 @@ public class UserDTO {
     public String Role;
     public int Point;
     public String Password;
+
+
 }

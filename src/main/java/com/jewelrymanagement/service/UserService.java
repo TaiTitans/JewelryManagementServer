@@ -1,13 +1,16 @@
 package com.jewelrymanagement.service;
 import com.jewelrymanagement.dto.UserDTO;
 import com.jewelrymanagement.entity.User;
+import com.jewelrymanagement.exceptions.BaseException;
+import com.jewelrymanagement.exceptions.User.DeletedSuccess;
+import com.jewelrymanagement.exceptions.User.UserNotFoundException;
 import com.jewelrymanagement.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.util.Optional;
 @Service
 public class UserService {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -20,7 +23,7 @@ public class UserService {
     }
 
     public UserDTO getUserById(int id){
-        return userRepository.findById(id).map(this::convertToDto).orElse(null);
+        return userRepository.findById(id).map(this::convertToDto).orElseThrow(()-> new UserNotFoundException(id));
     }
 
    public UserDTO createUser(UserDTO userDTO){
@@ -63,8 +66,13 @@ public UserDTO updateUser(int id, UserDTO userDTO){
         user.setPoint(userDTO.Point);
         return user;
     }
-    public void deleteUser(int id){
-        userRepository.deleteById(id);
+    public void deleteUser(int id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            throw new DeletedSuccess(id);
+        } else {
+            throw new UserNotFoundException(id);
+        }
     }
 
 
