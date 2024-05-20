@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/java,gradle,maven,eclipse,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,gradle,maven,eclipse,intellij
 
+.env
 ### Eclipse ###
 .metadata
 bin/
@@ -249,5 +250,4 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
-.env
-# End of https://www.toptal.com/developers/gitignore/api/java,gradle,maven,eclipse,intellij
+
