@@ -23,6 +23,14 @@ public class User {
     @NotBlank
     private String Phone;
 
+    public String getPhone() {
+        return Phone;
+    }
+
+    public void setPhone(String phone) {
+        Phone = phone;
+    }
+
     @NotBlank
     private String Address;
 

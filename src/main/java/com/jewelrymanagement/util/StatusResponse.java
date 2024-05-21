@@ -1,26 +1,32 @@
 package com.jewelrymanagement.util;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 public class StatusResponse<T> {
-    public StatusResponse(String status, String message, T data) {
-        this.status = String.valueOf(status);
+
+
+    public StatusResponse(String requestId, String requestDateTime, String status, String message, T data) {
+        this.requestId = UUID.randomUUID().toString();
+        this.requestDateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        this.status = status;
         this.message = message;
         this.data = data;
     }
 
-    public T getData() {
-        return data;
+    public String getRequestId() {
+        return requestId;
     }
 
-    public void setData(T data) {
-        this.data = data;
+    public String getRequestDateTime() {
+        return requestDateTime;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
-        this.status = String.valueOf(status);
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getMessage() {
@@ -31,6 +37,16 @@ public class StatusResponse<T> {
         this.message = message;
     }
 
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    private final String requestId;
+    private final String requestDateTime;
     private String status;
     private String message;
     private T data;
