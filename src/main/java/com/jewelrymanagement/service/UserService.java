@@ -3,7 +3,8 @@ import com.jewelrymanagement.dto.UserDTO;
 import com.jewelrymanagement.entity.LoginRequest;
 import com.jewelrymanagement.entity.LoginResponse;
 import com.jewelrymanagement.entity.User;
-import com.jewelrymanagement.repository.GetPhoneRepository;
+import com.jewelrymanagement.exceptions.User.Role;
+import com.jewelrymanagement.repository.GetUsernameRepository;
 import com.jewelrymanagement.repository.UserRepository;
 import com.jewelrymanagement.util.JwtTokenProvider;
 import com.jewelrymanagement.util.StatusResponse;
@@ -25,7 +26,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private GetPhoneRepository getPhoneRepository;
+    private GetUsernameRepository getUsernameRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -60,12 +61,11 @@ public class UserService {
 
 public StatusResponse<UserDTO> createUser(UserDTO userDTO){
         try{
-            if(getPhoneRepository.findByPhone(userDTO.Phone).isPresent()){
-                return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Error", "Phone number already exists", null);
+            if(getUsernameRepository.findByUsername(userDTO.Username).isPresent()){
+                return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Error", "Username already exists", null);
             }
             User user = convertToEntity(userDTO);
             user.setPassword(passwordEncoder.encode(userDTO.Password));
-            user.setPoint(0);
             user = userRepository.save(user);
             UserDTO createdUserDTO = convertToDto(user);
             return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Success", "User created successfully", createdUserDTO);
@@ -95,22 +95,14 @@ public StatusResponse<UserDTO> updateUser(int id, UserDTO userDTO) {
     private UserDTO convertToDto(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.IDUser = user.getIDUser();
-        userDTO.Name = user.getName();
-        userDTO.Sex = user.getSex();
-        userDTO.Address = user.getAddress();
-        userDTO.Phone = user.getPhone();
-        userDTO.Role = user.getRole();
-        userDTO.Point = user.getPoint();
+        userDTO.Username = user.getUsername();
+        userDTO.Role = Role.valueOf(user.getRole().name());
         return userDTO;
     }
     private User convertToEntity(UserDTO userDTO) {
         User user = new User();
-        user.setName(userDTO.Name);
-        user.setSex(userDTO.Sex);
-        user.setAddress(userDTO.Address);
-        user.setPhone(userDTO.Phone);
-        user.setRole(userDTO.Role);
-        user.setPoint(userDTO.Point);
+        user.setUsername(userDTO.Username);
+        user.setRole(com.jewelrymanagement.exceptions.User.Role.valueOf(userDTO.Role.name()));
         return user;
     }
     public StatusResponse<UserDTO> deleteUser(int id) {
@@ -123,32 +115,23 @@ public StatusResponse<UserDTO> updateUser(int id, UserDTO userDTO) {
     }
     public StatusResponse<LoginResponse> login(LoginRequest loginRequest) {
         try {
-            // Tìm kiếm user dựa trên số điện thoại
-            Optional<User> userOptional = getPhoneRepository.findByPhone(loginRequest.getPhone());
+            Optional<User> userOptional = getUsernameRepository.findByUsername(loginRequest.getUsername());
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                // Kiểm tra mật khẩu
                 if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                    // Kiểm tra vai trò của user
-                    if (user.getRole().equals("staff")) {
-                        // Chuyển đổi User sang UserDTO
-                        UserDTO userDTO = convertToDto(user);
-                        // Tạo access token và refresh token
-                        String accessToken = jwtTokenProvider.generateAccessToken(userDTO);
-                        String refreshToken = jwtTokenProvider.generateRefreshToken(userDTO);
-                        LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken);
-                        return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Success", "Login successful", loginResponse);
-                    } else {
-                        return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Error", "User is not a staff", null);
-                    }
+                    UserDTO userDTO = convertToDto(user);
+                    String accessToken = jwtTokenProvider.generateAccessToken(userDTO);
+                    String refreshToken = jwtTokenProvider.generateRefreshToken(userDTO);
+                    LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken);
+                    return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Success", "Login successful", loginResponse);
                 } else {
-                    throw new BadCredentialsException("Invalid username or password");
+                    return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Invalid username or password", null);
                 }
             } else {
-                throw new BadCredentialsException("Invalid username or password");
+                return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "User not found", null);
             }
         } catch (Exception ex) {
-            return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Error", ex.getMessage(), null);
+            return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", ex.getMessage(), null);
         }
     }
 

@@ -1,17 +1,14 @@
 package com.jewelrymanagement.dto;
+import com.jewelrymanagement.exceptions.User.Role;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 public class UserDTO {
+    @Id
     public int IDUser;
-    public String Name;
-    public byte Sex;
-    public String Address;
-    public String Phone;
-    public String Role;
-    public int Point;
+    public String Username;
     public String Password;
-
+    public Role Role;
 
 }

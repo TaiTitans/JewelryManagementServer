@@ -1,4 +1,6 @@
 package com.jewelrymanagement.util;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -13,32 +15,12 @@ public class StatusResponse<T> {
         this.data = data;
     }
 
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public String getRequestDateTime() {
-        return requestDateTime;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
     public void setStatus(String status) {
         this.status = status;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public T getData() {
-        return data;
     }
 
     public void setData(T data) {
@@ -47,6 +29,19 @@ public class StatusResponse<T> {
 
     private final String requestId;
     private final String requestDateTime;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
     private String status;
     private String message;
     private T data;

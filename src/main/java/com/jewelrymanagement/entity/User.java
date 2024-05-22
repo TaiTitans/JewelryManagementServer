@@ -1,11 +1,9 @@
 package com.jewelrymanagement.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import com.jewelrymanagement.exceptions.User.Role;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 @Data
 @Entity
@@ -15,31 +13,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int IDUser;
 
-    @NotBlank
-    private String Name;
-    @NotNull
-    private byte Sex;
-
-    @NotBlank
-    private String Phone;
-
-    public String getPhone() {
-        return Phone;
+    public String getUsername() {
+        return Username;
     }
 
-    public void setPhone(String phone) {
-        Phone = phone;
+    public void setUsername(String username) {
+        Username = username;
     }
 
-    @NotBlank
-    private String Address;
+    private String Username;
 
-    @NotBlank
     private String Password;
 
-    @NotBlank
-    @Pattern(regexp = "customer|staff", message = "Role must be either 'customer' or 'staff'")
-    private String Role;
+    @Enumerated(EnumType.STRING)
+    private Role Role;
 
-    private int Point;
 }

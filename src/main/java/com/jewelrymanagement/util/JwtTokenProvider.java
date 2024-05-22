@@ -50,14 +50,14 @@ public class JwtTokenProvider {
         Map<String, Object> claims = new HashMap<>();
         claims.put("idUser", userDTO.IDUser);
         claims.put("role", userDTO.Role);
-        return doGenerateToken(claims, userDTO.Name, accessTokenExpirationInMs);
+        return doGenerateToken(claims, userDTO.Username, accessTokenExpirationInMs);
     }
 
     public String generateRefreshToken(UserDTO userDTO) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("idUser", userDTO.IDUser);
         claims.put("role", userDTO.Role);
-        return doGenerateToken(claims, userDTO.Name, refreshTokenExpirationInMs);
+        return doGenerateToken(claims, userDTO.Username, refreshTokenExpirationInMs);
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject, long expirationInMs) {
@@ -72,6 +72,6 @@ public class JwtTokenProvider {
 
     public Boolean validateToken(String token, UserDTO userDTO) {
         final String username = getUsernameFromToken(token);
-        return (username.equals(userDTO.Name) && !isTokenExpired(token));
+        return (username.equals(userDTO.Username) && !isTokenExpired(token));
     }
 }

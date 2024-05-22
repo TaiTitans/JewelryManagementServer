@@ -3,17 +3,17 @@ package com.jewelrymanagement.entity;
 public class LoginRequest {
 
 
-    public LoginRequest(String phone, String password) {
-        Phone = phone;
+    public LoginRequest(String username, String password) {
+        Username = username;
         Password = password;
     }
 
-    public String getPhone() {
-        return Phone;
+    public String getUsername() {
+        return Username;
     }
 
-    public void setPhone(String phone) {
-        Phone = phone;
+    public void setUsername(String username) {
+        Username = username;
     }
 
     public String getPassword() {
@@ -24,6 +24,6 @@ public class LoginRequest {
         Password = password;
     }
 
-    private String Phone;
+    private String Username;
     private String Password;
 }
