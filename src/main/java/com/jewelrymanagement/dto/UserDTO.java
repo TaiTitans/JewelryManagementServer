@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 public class UserDTO {
     @Id
-    public int IDUser;
+    public int user_id;
     public String Username;
     public String Password;
     public Role Role;

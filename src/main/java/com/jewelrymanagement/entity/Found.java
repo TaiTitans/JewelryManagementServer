@@ -29,6 +29,9 @@ public class Found {
     @Column(name = "transaction_date")
     private LocalDate transactionDate;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user_id;
 
 
     // Constructors, Getters and Setters
@@ -75,6 +78,11 @@ public class Found {
         this.transactionDate = transactionDate;
     }
 
-
+    public User getUser_id() {
+        return user_id;
+    }
+    public void setUser_id(User user_id) {
+        this.user_id = user_id;
+    }
 }
 

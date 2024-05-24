@@ -77,7 +77,7 @@ public StatusResponse<UserDTO> updateUser(int id, UserDTO userDTO) {
     try {
        if(userRepository.existsById(id)){
            User user = convertToEntity(userDTO);
-           user.setIDUser(id);
+           user.getUser_id();
            if(userDTO.Password!=null && !userDTO.Password.isEmpty()){
                user.setPassword(passwordEncoder.encode(userDTO.Password));
            }
@@ -94,7 +94,7 @@ public StatusResponse<UserDTO> updateUser(int id, UserDTO userDTO) {
 }
     private UserDTO convertToDto(User user) {
         UserDTO userDTO = new UserDTO();
-        userDTO.IDUser = user.getIDUser();
+        userDTO.user_id = user.getUser_id();
         userDTO.Username = user.getUsername();
         userDTO.Role = Role.valueOf(user.getRole().name());
         return userDTO;

@@ -2,9 +2,10 @@ package com.jewelrymanagement.service;
 
 import com.jewelrymanagement.dto.FoundDTO;
 import com.jewelrymanagement.entity.Found;
+import com.jewelrymanagement.entity.User;
 import com.jewelrymanagement.exceptions.Found.TransactionType;
-import com.jewelrymanagement.exceptions.User.Role;
 import com.jewelrymanagement.repository.FoundRepository;
+import com.jewelrymanagement.repository.UserRepository;
 import com.jewelrymanagement.util.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,24 +21,29 @@ import java.util.stream.Collectors;
 public class FoundsService {
     @Autowired
     private FoundRepository foundRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-
-    private Found convertToEntity(FoundDTO foundDTO){
+    private Found convertToEntity(FoundDTO foundDTO, UserRepository userRepository){
         Found found = new Found();
         found.setAmount(foundDTO.getAmount());
         found.setDescription(foundDTO.getDescription());
         found.setTransactionType(com.jewelrymanagement.exceptions.Found.TransactionType.valueOf(foundDTO.getTransactionType().name()));
         found.setTransactionDate(foundDTO.getTransactionDate());
+        User user = userRepository.findById(foundDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        found.setUser_id(user);
         return found;
     }
 
     private FoundDTO convertToDTO(Found found){
         FoundDTO foundDTO = new FoundDTO();
-        foundDTO.setFoundID(found.getFoundId()); // Sử dụng setter mới
-        foundDTO.setAmount(found.getAmount()); // Sử dụng setter mới
-        foundDTO.setDescription(found.getDescription()); // Sử dụng setter mới
+        foundDTO.setFoundID(found.getFoundId());
+        foundDTO.setAmount(found.getAmount());
+        foundDTO.setDescription(found.getDescription());
         foundDTO.setTransactionType(com.jewelrymanagement.exceptions.Found.TransactionType.valueOf(found.getTransactionType().name()));
-        foundDTO.setTransactionDate(found.getTransactionDate()); // Sử dụng setter mới
+        foundDTO.setTransactionDate(found.getTransactionDate());
+        foundDTO.setUserId(found.getUser_id().getUser_id());
         return foundDTO;
     }
 
@@ -80,7 +86,7 @@ public StatusResponse<FoundDTO> getFoundById(int id){
 
 public StatusResponse<FoundDTO> createFound(FoundDTO foundDTO){
     try{
-        Found found = convertToEntity(foundDTO);
+        Found found = convertToEntity(foundDTO, userRepository);
 
         found.setTransactionDate(LocalDate.now());
 
@@ -96,7 +102,7 @@ public StatusResponse<FoundDTO> createFound(FoundDTO foundDTO){
 public StatusResponse<FoundDTO> updateFound(int id,FoundDTO foundsDTO){
     try{
         if(foundRepository.existsById(id)){
-            Found found = convertToEntity(foundsDTO);
+            Found found = convertToEntity(foundsDTO, userRepository);
             found.setFoundId(id);
             found = foundRepository.save(found);
             FoundDTO updatedFoundDTO = convertToDTO(found);

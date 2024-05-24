@@ -48,14 +48,14 @@ public class JwtTokenProvider {
 
     public String generateAccessToken(UserDTO userDTO) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("idUser", userDTO.IDUser);
+        claims.put("user_id", userDTO.user_id);
         claims.put("role", userDTO.Role);
         return doGenerateToken(claims, userDTO.Username, accessTokenExpirationInMs);
     }
 
     public String generateRefreshToken(UserDTO userDTO) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("idUser", userDTO.IDUser);
+        claims.put("user_id", userDTO.user_id);
         claims.put("role", userDTO.Role);
         return doGenerateToken(claims, userDTO.Username, refreshTokenExpirationInMs);
     }

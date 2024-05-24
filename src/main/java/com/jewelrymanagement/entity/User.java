@@ -11,7 +11,7 @@ import com.jewelrymanagement.exceptions.User.Role;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int IDUser;
+    private int user_id;
 
     public String getUsername() {
         return Username;

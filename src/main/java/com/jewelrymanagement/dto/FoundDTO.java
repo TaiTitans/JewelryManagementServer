@@ -1,9 +1,8 @@
 package com.jewelrymanagement.dto;
+import com.jewelrymanagement.entity.User;
 import com.jewelrymanagement.exceptions.Found.TransactionType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 public class FoundDTO {
     private int foundID;
@@ -11,7 +10,7 @@ public class FoundDTO {
     private BigDecimal amount;
     private String description;
     private LocalDate transactionDate;
-
+    private int userId;
     // Getters and Setters
     public int getFoundID() {
         return foundID;
@@ -53,4 +52,10 @@ public class FoundDTO {
         this.transactionDate = transactionDate;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 }
