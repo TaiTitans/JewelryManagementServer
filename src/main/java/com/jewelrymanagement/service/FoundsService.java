@@ -1,9 +1,10 @@
 package com.jewelrymanagement.service;
 
-import com.jewelrymanagement.dto.FoundsDTO;
-import com.jewelrymanagement.entity.Founds;
+import com.jewelrymanagement.dto.FoundDTO;
+import com.jewelrymanagement.entity.Found;
 import com.jewelrymanagement.exceptions.Found.TransactionType;
-import com.jewelrymanagement.repository.FoundsRepository;
+import com.jewelrymanagement.exceptions.User.Role;
+import com.jewelrymanagement.repository.FoundRepository;
 import com.jewelrymanagement.util.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,42 +13,39 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class FoundsService {
-@Autowired
-    private FoundsRepository foundsRepository;
+    @Autowired
+    private FoundRepository foundRepository;
 
 
-private Founds convertToEntity(FoundsDTO foundsDTO){
-    Founds founds = new Founds();
-    founds.setAmount(foundsDTO.Amount);
-    founds.setDescription(foundsDTO.Description);
-    founds.setTransactionType(com.jewelrymanagement.exceptions.Found.TransactionType.valueOf(foundsDTO.transactionType.name()));
-    founds.setTransactionDate(foundsDTO.TransactionDate);
-    founds.setCreatedAt(foundsDTO.CreatedAt);
-    founds.setUpdatedAt(foundsDTO.UpdatedAt);
-    return founds;
-}
+    private Found convertToEntity(FoundDTO foundDTO){
+        Found found = new Found();
+        found.setAmount(foundDTO.getAmount());
+        found.setDescription(foundDTO.getDescription());
+        found.setTransactionType(com.jewelrymanagement.exceptions.Found.TransactionType.valueOf(foundDTO.getTransactionType().name()));
+        found.setTransactionDate(foundDTO.getTransactionDate());
+        return found;
+    }
 
-private FoundsDTO convertToDTO(Founds founds){
-    FoundsDTO foundsDTO = new FoundsDTO();
-    foundsDTO.Amount = founds.getAmount();
-    foundsDTO.Description = founds.getDescription();
-    foundsDTO.transactionType = TransactionType.valueOf(founds.getTransactionType().name());
-    foundsDTO.TransactionDate = founds.getTransactionDate();
-    foundsDTO.CreatedAt = founds.getCreatedAt();
-    foundsDTO.UpdatedAt = founds.getUpdatedAt();
-    return foundsDTO;
-}
+    private FoundDTO convertToDTO(Found found){
+        FoundDTO foundDTO = new FoundDTO();
+        foundDTO.setFoundID(found.getFoundId()); // Sử dụng setter mới
+        foundDTO.setAmount(found.getAmount()); // Sử dụng setter mới
+        foundDTO.setDescription(found.getDescription()); // Sử dụng setter mới
+        foundDTO.setTransactionType(com.jewelrymanagement.exceptions.Found.TransactionType.valueOf(found.getTransactionType().name()));
+        foundDTO.setTransactionDate(found.getTransactionDate()); // Sử dụng setter mới
+        return foundDTO;
+    }
 
-    public StatusResponse<List<FoundsDTO>> getAllFounds() {
+
+    public StatusResponse<List<FoundDTO>> getAllFounds() {
         try {
-            List<Founds> founds = foundsRepository.findAll();
-            List<FoundsDTO> foundsDTOs = founds.stream().map(this::convertToDTO).collect(Collectors.toList());
+            List<Found> found = foundRepository.findAll();
+            List<FoundDTO> foundsDTOs = found.stream().map(this::convertToDTO).collect(Collectors.toList());
             return new StatusResponse<>(
                     UUID.randomUUID().toString(),
                     LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
@@ -65,12 +63,12 @@ private FoundsDTO convertToDTO(Founds founds){
             );
         }
     }
-public StatusResponse<FoundsDTO> getFoundById(int id){
+public StatusResponse<FoundDTO> getFoundById(int id){
     try{
-        Optional<Founds> foundsOptional = foundsRepository.findById(id);
-        if(foundsOptional.isPresent()){
-            Founds founds = foundsOptional.get();
-            FoundsDTO foundsDTO = convertToDTO(founds);
+        Optional<Found> foundOptional = foundRepository.findById(id);
+        if(foundOptional.isPresent()){
+            Found founds = foundOptional.get();
+            FoundDTO foundsDTO = convertToDTO(founds);
             return new StatusResponse<>(UUID.randomUUID().toString(),LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Success", "Successfully get found", foundsDTO);
         }else{
             return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "User not found", null);
@@ -80,31 +78,28 @@ public StatusResponse<FoundsDTO> getFoundById(int id){
     }
 }
 
-public StatusResponse<FoundsDTO> createFound(FoundsDTO foundsDTO){
+public StatusResponse<FoundDTO> createFound(FoundDTO foundDTO){
     try{
-        Founds founds = convertToEntity(foundsDTO);
-        LocalDateTime nowDateTime = LocalDateTime.now();
+        Found found = convertToEntity(foundDTO);
 
-        founds.setTransactionDate(LocalDate.now());
-        founds.setCreatedAt(nowDateTime);
-        founds.setUpdatedAt(nowDateTime);
+        found.setTransactionDate(LocalDate.now());
 
 
-        founds = foundsRepository.save(founds);
-        FoundsDTO createdFoundDTO = convertToDTO(founds);
+        found = foundRepository.save(found);
+        FoundDTO createdFoundDTO = convertToDTO(found);
         return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Success", "Found created successfully", createdFoundDTO);
     }catch (Exception ex){
         return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Error", "Found created error", null);
     }
 }
 
-public StatusResponse<FoundsDTO> updateFound(int id,FoundsDTO foundsDTO){
+public StatusResponse<FoundDTO> updateFound(int id,FoundDTO foundsDTO){
     try{
-        if(foundsRepository.existsById(id)){
-            Founds found = convertToEntity(foundsDTO);
-            found.setFoundID(id);
-            found = foundsRepository.save(found);
-            FoundsDTO updatedFoundDTO = convertToDTO(found);
+        if(foundRepository.existsById(id)){
+            Found found = convertToEntity(foundsDTO);
+            found.setFoundId(id);
+            found = foundRepository.save(found);
+            FoundDTO updatedFoundDTO = convertToDTO(found);
             return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Success", "Found updated successfully", updatedFoundDTO);
         } else {
             return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Error", "Found not found", null);
@@ -114,9 +109,9 @@ public StatusResponse<FoundsDTO> updateFound(int id,FoundsDTO foundsDTO){
     }
 }
 
-public StatusResponse<FoundsDTO> deleteFound(int id){
+public StatusResponse<FoundDTO> deleteFound(int id){
     try{
-        foundsRepository.deleteById(id);
+        foundRepository.deleteById(id);
         return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Success", "Found deleted successfully", null);
     }catch (Exception ex){
         return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Error", "Failed to deleted found", null);
@@ -126,8 +121,8 @@ public StatusResponse<FoundsDTO> deleteFound(int id){
 public StatusResponse<Map<String, BigDecimal>> getDailySummary(LocalDate date){
     try{
         Map<String, BigDecimal> summary = new HashMap<>();
-        BigDecimal income = foundsRepository.DailySummary(date, TransactionType.in);
-        BigDecimal expenditure = foundsRepository.DailySummary(date, TransactionType.out);
+        BigDecimal income = foundRepository.DailySummary(date, TransactionType.IN);
+        BigDecimal expenditure = foundRepository.DailySummary(date, TransactionType.OUT);
         summary.put("income", income != null ? income : BigDecimal.ZERO);
         summary.put("expenditure", expenditure != null ? expenditure : BigDecimal.ZERO);
         return new StatusResponse<>(UUID.randomUUID().toString(),LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Success", "Daily Summary retrieved successfully", summary);
@@ -142,10 +137,10 @@ public StatusResponse<Map<String, BigDecimal>> getDailySummary(LocalDate date){
     public StatusResponse<Map<String, BigDecimal>> getTodaySummary() {
         try {
             LocalDate today = LocalDate.now();
-            List<Founds> foundsList = foundsRepository.findAll().stream()
+            List<Found> foundList = foundRepository.findAll().stream()
                     .filter(f -> f.getTransactionDate() != null && f.getTransactionDate().equals(today))
                     .collect(Collectors.toList());
-            Map<String, BigDecimal> summary = getTodaySummary(foundsList);
+            Map<String, BigDecimal> summary = getTodaySummary(foundList);
 
             return new StatusResponse<>(
                     UUID.randomUUID().toString(),
@@ -164,15 +159,15 @@ public StatusResponse<Map<String, BigDecimal>> getDailySummary(LocalDate date){
             );
         }
     }
-    private static Map<String, BigDecimal> getTodaySummary(List<Founds> foundsList) {
+    private static Map<String, BigDecimal> getTodaySummary(List<Found> foundsList) {
         Map<String, BigDecimal> summary = new HashMap<>();
         summary.put("income", foundsList.stream()
-                .filter(f -> f.getTransactionType() == TransactionType.in)
-                .map(Founds::getAmount)
+                .filter(f -> f.getTransactionType() == TransactionType.IN)
+                .map(Found::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
         summary.put("expenditure", foundsList.stream()
-                .filter(f -> f.getTransactionType() == TransactionType.out)
-                .map(Founds::getAmount)
+                .filter(f -> f.getTransactionType() == TransactionType.OUT)
+                .map(Found::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
         return summary;
     }

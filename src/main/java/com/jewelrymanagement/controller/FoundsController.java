@@ -1,8 +1,8 @@
 package com.jewelrymanagement.controller;
 
-import com.jewelrymanagement.dto.FoundsDTO;
+import com.jewelrymanagement.dto.FoundDTO;
 import com.jewelrymanagement.exceptions.Found.TransactionType;
-import com.jewelrymanagement.repository.FoundsRepository;
+import com.jewelrymanagement.repository.FoundRepository;
 import com.jewelrymanagement.service.FoundsService;
 import com.jewelrymanagement.util.StatusResponse;
 import jakarta.validation.Valid;
@@ -25,11 +25,11 @@ public class FoundsController {
     @Autowired
     private FoundsService foundsService;
     @Autowired
-    private FoundsRepository foundsRepository;
+    private FoundRepository foundRepository;
 
     @GetMapping
-    public ResponseEntity<StatusResponse<List<FoundsDTO>>> getAllFound() {
-        StatusResponse<List<FoundsDTO>> response = foundsService.getAllFounds();
+    public ResponseEntity<StatusResponse<List<FoundDTO>>> getAllFound() {
+        StatusResponse<List<FoundDTO>> response = foundsService.getAllFounds();
         if ("Success".equalsIgnoreCase(response.getStatus())) {
             return ResponseEntity.ok(response);
         } else {
@@ -37,8 +37,8 @@ public class FoundsController {
         }
     }
     @GetMapping("/{id}")
-    public ResponseEntity<StatusResponse<FoundsDTO>> getFoundById(@PathVariable int id) {
-        StatusResponse<FoundsDTO> response = foundsService.getFoundById(id);
+    public ResponseEntity<StatusResponse<FoundDTO>> getFoundById(@PathVariable int id) {
+        StatusResponse<FoundDTO> response = foundsService.getFoundById(id);
         if ("Success".equals(response.getStatus())) {
             return ResponseEntity.ok(response);
         } else if ("Found not found".equals(response.getStatus())) {
@@ -50,8 +50,8 @@ public class FoundsController {
 
 
     @PostMapping
-    public ResponseEntity<StatusResponse<FoundsDTO>> createFound(@Valid @RequestBody FoundsDTO foundsDTO) {
-        StatusResponse<FoundsDTO> response = foundsService.createFound(foundsDTO);
+    public ResponseEntity<StatusResponse<FoundDTO>> createFound(@Valid @RequestBody FoundDTO foundDTO) {
+        StatusResponse<FoundDTO> response = foundsService.createFound(foundDTO);
         if ("Success".equals(response.getStatus())) {
             return ResponseEntity.ok(response);
         } else {
@@ -60,8 +60,8 @@ public class FoundsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StatusResponse<FoundsDTO>> updateFound(@PathVariable int id, @RequestBody FoundsDTO foundsDTO) {
-        StatusResponse<FoundsDTO> response = foundsService.updateFound(id, foundsDTO);
+    public ResponseEntity<StatusResponse<FoundDTO>> updateFound(@PathVariable int id, @RequestBody FoundDTO foundDTO) {
+        StatusResponse<FoundDTO> response = foundsService.updateFound(id, foundDTO);
         if ("Success".equals(response.getStatus())) {
             return ResponseEntity.ok(response);
         } else if("Found not found".equals(response.getMessage())){
@@ -72,8 +72,8 @@ public class FoundsController {
     }
 
     @DeleteMapping("/{id}")
-public ResponseEntity<StatusResponse<FoundsDTO>> deleteFound (@PathVariable int id){
-        StatusResponse<FoundsDTO> response = foundsService.deleteFound(id);
+public ResponseEntity<StatusResponse<FoundDTO>> deleteFound (@PathVariable int id){
+        StatusResponse<FoundDTO> response = foundsService.deleteFound(id);
         if("Success".equals(response.getStatus())){
             return ResponseEntity.ok(response);
         }else if("Found not found".equals(response.getMessage())){
