@@ -104,6 +104,7 @@ public StatusResponse<FoundDTO> updateFound(int id,FoundDTO foundsDTO){
         if(foundRepository.existsById(id)){
             Found found = convertToEntity(foundsDTO, userRepository);
             found.setFoundId(id);
+            found.setTransactionDate(LocalDate.now());
             found = foundRepository.save(found);
             FoundDTO updatedFoundDTO = convertToDTO(found);
             return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Success", "Found updated successfully", updatedFoundDTO);
@@ -123,14 +124,17 @@ public StatusResponse<FoundDTO> deleteFound(int id){
         return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Error", "Failed to deleted found", null);
     }
 }
-
+//Xem loi nhuan 1 ngay cu the
 public StatusResponse<Map<String, BigDecimal>> getDailySummary(LocalDate date){
     try{
         Map<String, BigDecimal> summary = new HashMap<>();
         BigDecimal income = foundRepository.DailySummary(date, TransactionType.IN);
         BigDecimal expenditure = foundRepository.DailySummary(date, TransactionType.OUT);
+        // Tính toán tổng lợi nhuận (profit)
+        BigDecimal profit = income.subtract(expenditure);
         summary.put("income", income != null ? income : BigDecimal.ZERO);
         summary.put("expenditure", expenditure != null ? expenditure : BigDecimal.ZERO);
+        summary.put("profit", profit != null ? profit : BigDecimal.ZERO);
         return new StatusResponse<>(UUID.randomUUID().toString(),LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Success", "Daily Summary retrieved successfully", summary);
 
     }catch (Exception ex){
@@ -146,7 +150,8 @@ public StatusResponse<Map<String, BigDecimal>> getDailySummary(LocalDate date){
             List<Found> foundList = foundRepository.findAll().stream()
                     .filter(f -> f.getTransactionDate() != null && f.getTransactionDate().equals(today))
                     .collect(Collectors.toList());
-            Map<String, BigDecimal> summary = getTodaySummary(foundList);
+
+            Map<String, BigDecimal> summary = calculateSummary(foundList);
 
             return new StatusResponse<>(
                     UUID.randomUUID().toString(),
@@ -165,16 +170,25 @@ public StatusResponse<Map<String, BigDecimal>> getDailySummary(LocalDate date){
             );
         }
     }
-    private static Map<String, BigDecimal> getTodaySummary(List<Found> foundsList) {
+    private static Map<String, BigDecimal> calculateSummary(List<Found> foundsList) {
         Map<String, BigDecimal> summary = new HashMap<>();
-        summary.put("income", foundsList.stream()
+
+        BigDecimal income = foundsList.stream()
                 .filter(f -> f.getTransactionType() == TransactionType.IN)
                 .map(Found::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add));
-        summary.put("expenditure", foundsList.stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal expenditure = foundsList.stream()
                 .filter(f -> f.getTransactionType() == TransactionType.OUT)
                 .map(Found::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add));
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal profit = income.subtract(expenditure);
+
+        summary.put("income", income);
+        summary.put("expenditure", expenditure);
+        summary.put("profit", profit);
+
         return summary;
     }
 

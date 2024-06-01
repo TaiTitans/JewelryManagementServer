@@ -5,6 +5,7 @@ import com.jewelrymanagement.entity.LoginRequest;
 import com.jewelrymanagement.entity.LoginResponse;
 import com.jewelrymanagement.service.UserService;
 import com.jewelrymanagement.util.StatusResponse;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,15 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private UserService userService;
     @Value("${jwt.access-token-expiration-in-ms}")
     private long accessTokenExpirationInMs;
-    @GetMapping
+
+    @GetMapping("/manager/users")
     public ResponseEntity<StatusResponse<List<UserDTO>>> getAllUsers(){
         StatusResponse<List<UserDTO>> response = userService.getAllUsers();
         if("Success".equals(response.getStatus())){
@@ -33,7 +35,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/manager/user/{id}")
     public ResponseEntity<StatusResponse<UserDTO>> getUserById(@PathVariable int id) {
         StatusResponse<UserDTO> response = userService.getUserById(id);
         if ("Success".equals(response.getStatus())) {
@@ -46,7 +48,7 @@ public class UserController {
     }
 
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO){
         StatusResponse<UserDTO> response = userService.createUser(userDTO);
         if ("Success".equals(response.getStatus())) {
@@ -56,7 +58,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/user/{id}")
     public ResponseEntity<StatusResponse<UserDTO>> updateUser(@PathVariable int id, @RequestBody UserDTO userDTO){
         StatusResponse<UserDTO> response = userService.updateUser(id, userDTO);
         if("Success".equals(response.getStatus())){
@@ -67,15 +69,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/user/{id}")
     public ResponseEntity<StatusResponse> deleteUser(@PathVariable int id) {
         StatusResponse response = userService.deleteUser(id);
-        if(response.getMessage().equals("Success")){
+        if("Success".equals(response.getStatus())){
             return ResponseEntity.ok(response);
-        }else{
+        } else if("User not found".equals(response.getMessage())){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<StatusResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
