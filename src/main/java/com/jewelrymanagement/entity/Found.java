@@ -13,17 +13,17 @@ public class Found {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "FoundID")
-    private int foundId;
+    @Column(name = "found_id")
+    private Integer foundId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type")
     private TransactionType transactionType;
 
-    @Column(name = "Amount")
+    @Column(name = "amount")
     private BigDecimal amount;
 
-    @Column(name = "Description")
+    @Column(name = "description")
     private String description;
 
     @Column(name = "transaction_date")

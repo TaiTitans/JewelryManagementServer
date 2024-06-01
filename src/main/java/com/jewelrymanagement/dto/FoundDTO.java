@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class FoundDTO {
-    private int foundID;
+    private Integer foundID;
     private TransactionType transactionType;
     private BigDecimal amount;
     private String description;
