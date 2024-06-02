@@ -1,6 +1,7 @@
 package com.jewelrymanagement.dto;
-import com.jewelrymanagement.entity.User;
+
 import com.jewelrymanagement.exceptions.Found.TransactionType;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

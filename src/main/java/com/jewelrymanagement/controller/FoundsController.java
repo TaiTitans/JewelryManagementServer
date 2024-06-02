@@ -38,7 +38,7 @@ public class FoundsController {
         StatusResponse<FoundDTO> response = foundsService.getFoundById(id);
         if ("Success".equals(response.getStatus())) {
             return ResponseEntity.ok(response);
-        } else if ("Found not found".equals(response.getStatus())) {
+        } else if ("Found not found".equals(response.getMessage())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
