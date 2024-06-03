@@ -8,7 +8,7 @@ import lombok.Data;
 @Table(name = "suppliers")
 @Data
 public class Supplier {
-    public Supplier(Integer supplier_id, String supplier_name, String address, Integer phone, String email) {
+    public Supplier(Integer supplier_id, String supplier_name, String address, String phone, String email) {
         this.supplier_id = supplier_id;
         this.supplier_name = supplier_name;
         this.address = address;
@@ -28,7 +28,7 @@ public class Supplier {
     private String address;
 
     @Column(name = "phone")
-    private Integer phone;
+    private String phone;
 
     @Column(name = "email")
     private String email;

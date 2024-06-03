@@ -1,11 +1,16 @@
 package com.jewelrymanagement.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SupplierDTO {
-    public
-    Integer supplier_id;
-    String supplier_name;
-    String supplier_address;
-    Integer supplier_phone;
-    String supplier_email;
+    public Integer supplier_id;
+
+    public String supplier_name;
+
+    public String address;
+
+    public String phone;
+
+    public String email;
 
 }
