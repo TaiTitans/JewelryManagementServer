@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DeveloperToolsToolWindowSettingsV1" lastSelectedContentNodeId="base64-encoder-decoder">
-    <developerToolsConfigurations />
+  <component name="DeveloperToolsToolWindowSettingsV1" lastSelectedContentNodeId="jwt-encoder-decoder">
+    <developerToolsConfigurations>
+      <developerToolConfiguration developerToolId="jwt-encoder-decoder" id="3eb0de3e-1f40-4297-805a-3fdb4d6c4616" name="Workbench">
+        <properties>
+          <property key="headerText" type="INPUT" value="kotlin.String|{&#10;  &quot;typ&quot;:&quot;JWT&quot;,&#10;  &quot;alg&quot;:&quot;HS256&quot;&#10;}" />
+          <property key="payloadText" type="INPUT" value="kotlin.String|{&#10;  &quot;jti&quot;:&quot;96492d59-0ad5-4c00-892d-590ad5ac00f3&quot;,&#10;  &quot;sub&quot;:&quot;0123456789&quot;,&#10;  &quot;name&quot;:&quot;John Doe&quot;,&#10;  &quot;iat&quot;:1681040515&#10;}" />
+          <property key="secret" type="SECRET" value="kotlin.String|SAVED_IN_KEYSTORE" />
+          <property key="encodedText" type="INPUT" value="kotlin.String|ewogICJ0eXAiOiJKV1QiLAogICJhbGciOiJIUzI1NiIKfQ.ewogICJqdGkiOiI5NjQ5MmQ1OS0wYWQ1LTRjMDAtODkyZC01OTBhZDVhYzAwZjMiLAogICJzdWIiOiIwMTIzNDU2Nzg5IiwKICAibmFtZSI6IkpvaG4gRG9lIiwKICAiaWF0IjoxNjgxMDQwNTE1Cn0.ZXdvZ0lDSjBlWEFpT2lKS1YxUWlMQW9nSUNKaGJHY2lPaUpJVXpJMU5pSUtmUS4uSXFlTmwzbEhTVWZQZkVZbXR0dmxRcDFzSDlMcEFvUEpsVWlTdjRYUERTRQ" />
+          <property key="privateKey" type="SECRET" value="kotlin.String|SAVED_IN_KEYSTORE" />
+        </properties>
+      </developerToolConfiguration>
+    </developerToolsConfigurations>
+    <expandedGroupNodeIds />
   </component>
 </project>
