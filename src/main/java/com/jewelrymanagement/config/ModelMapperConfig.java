@@ -1,5 +1,7 @@
 package com.jewelrymanagement.config;
 
+import com.jewelrymanagement.dto.ProductDTO;
+import com.jewelrymanagement.entity.Product;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
