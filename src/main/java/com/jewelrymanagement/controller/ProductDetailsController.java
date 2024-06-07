@@ -68,4 +68,25 @@ public class ProductDetailsController {
         }
     }
 
+    @GetMapping("/common/product/{id}/details")
+    public ResponseEntity<StatusResponse<List<ProductDetailsDTO>>> getProductDetailsByProductId(@PathVariable Integer id){
+        StatusResponse<List<ProductDetailsDTO>> response = productDetailsService.getAllProductById(id);
+        if("Success".equals(response.getStatus())){
+            return ResponseEntity.ok(response);
+        }else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+
+    @DeleteMapping("/manager/product/{id}/details")
+    public ResponseEntity<StatusResponse<ProductDetailsDTO>> deleteProductDetailsByProductId(@PathVariable Integer id){
+        StatusResponse<ProductDetailsDTO> response = productDetailsService.deteteProductDetails(id);
+        if("Success".equals(response.getStatus())){
+            return ResponseEntity.ok(response);
+        }else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }

@@ -51,6 +51,7 @@ public class ProductDetailsService {
         return productDetails;
     }
 
+
     public StatusResponse<ProductDetailsDTO> addProductDetails(ProductDetailsDTO productDetailsDTO) {
         try{
             ProductDetails productDetails = convertToEntity(productDetailsDTO);
@@ -61,6 +62,17 @@ public class ProductDetailsService {
             return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Create error", null);
         }
     }
+
+    public StatusResponse<List<ProductDetailsDTO>> getAllProductById(Integer id){
+        try{
+            List<ProductDetails> productDetailsList = productDetailsRepository.findProductByProductId(id);
+            List<ProductDetailsDTO> productDetailsDTOSave = productDetailsList.stream().map(this::convertToDTO).collect(Collectors.toList());
+            return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Success", "Product list retrieved successfully", productDetailsDTOSave);
+        }catch (Exception e){
+            return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "An unexpected error occurred", null);
+        }
+    }
+
 
     public StatusResponse<List<ProductDetailsDTO>> findAllProductDetails() {
         try {
@@ -112,4 +124,15 @@ public class ProductDetailsService {
         }
     }
 
+    public StatusResponse<?> deleteProductDetailsByProductId(Integer id) {
+        try {
+            productDetailsRepository.deleteAllByProductId(id);
+
+            return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Success", "ProductDetails delete successfully", null);
+
+        } catch (Exception e) {
+            return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Delete error", null);
+
+        }
+    }
 }

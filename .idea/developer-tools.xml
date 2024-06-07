@@ -4,11 +4,12 @@
     <developerToolsConfigurations>
       <developerToolConfiguration developerToolId="jwt-encoder-decoder" id="3eb0de3e-1f40-4297-805a-3fdb4d6c4616" name="Workbench">
         <properties>
-          <property key="headerText" type="INPUT" value="kotlin.String|{&#10;  &quot;typ&quot;:&quot;JWT&quot;,&#10;  &quot;alg&quot;:&quot;HS256&quot;&#10;}" />
-          <property key="payloadText" type="INPUT" value="kotlin.String|{&#10;  &quot;jti&quot;:&quot;96492d59-0ad5-4c00-892d-590ad5ac00f3&quot;,&#10;  &quot;sub&quot;:&quot;0123456789&quot;,&#10;  &quot;name&quot;:&quot;John Doe&quot;,&#10;  &quot;iat&quot;:1681040515&#10;}" />
+          <property key="headerText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;alg&quot;:&quot;HS512&quot;&#13;&#10;}" />
+          <property key="payloadText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;sub&quot;:&quot;32,admin&quot;,&#13;&#10;  &quot;iss&quot;:&quot;TitansDev&quot;,&#13;&#10;  &quot;roles&quot;:[&#13;&#10;    &quot;ROLE_ADMIN&quot;&#13;&#10;  ],&#13;&#10;  &quot;iat&quot;:1717777112,&#13;&#10;  &quot;exp&quot;:1717780712&#13;&#10;}" />
           <property key="secret" type="SECRET" value="kotlin.String|SAVED_IN_KEYSTORE" />
-          <property key="encodedText" type="INPUT" value="kotlin.String|ewogICJ0eXAiOiJKV1QiLAogICJhbGciOiJIUzI1NiIKfQ.ewogICJqdGkiOiI5NjQ5MmQ1OS0wYWQ1LTRjMDAtODkyZC01OTBhZDVhYzAwZjMiLAogICJzdWIiOiIwMTIzNDU2Nzg5IiwKICAibmFtZSI6IkpvaG4gRG9lIiwKICAiaWF0IjoxNjgxMDQwNTE1Cn0.ZXdvZ0lDSjBlWEFpT2lKS1YxUWlMQW9nSUNKaGJHY2lPaUpJVXpJMU5pSUtmUS4uSXFlTmwzbEhTVWZQZkVZbXR0dmxRcDFzSDlMcEFvUEpsVWlTdjRYUERTRQ" />
+          <property key="encodedText" type="INPUT" value="kotlin.String|eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMixhZG1pbiIsImlzcyI6IlRpdGFuc0RldiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWF0IjoxNzE3Nzc3MTEyLCJleHAiOjE3MTc3ODA3MTJ9.r5N2a_stNkSq1cYqwQnGNusKJ3PBrdftJNY7Tb5Yt3UnbKw5IIiQaRugvjsf_ZEMcxb3Pa22ijbAFyQe7Ijl4g" />
           <property key="privateKey" type="SECRET" value="kotlin.String|SAVED_IN_KEYSTORE" />
+          <property key="algorithm" type="CONFIGURATION" value="dev.turingcomplete.intellijdevelopertoolsplugin._internal.tool.ui.converter.JwtEncoderDecoder$SignatureAlgorithm|HMAC512" />
         </properties>
       </developerToolConfiguration>
     </developerToolsConfigurations>

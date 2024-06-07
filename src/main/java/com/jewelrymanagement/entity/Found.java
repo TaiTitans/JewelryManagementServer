@@ -28,9 +28,9 @@ public class Found {
     @Column(name = "transaction_date")
     private LocalDate transactionDate;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user_id;
+
+    @JoinColumn(name = "created_by", nullable = false)
+    private String created_by;
 
 
     // Constructors, Getters and Setters
@@ -77,11 +77,11 @@ public class Found {
         this.transactionDate = transactionDate;
     }
 
-    public User getUser_id() {
-        return user_id;
+    public String getCreated_by() {
+        return created_by;
     }
-    public void setUser_id(User user_id) {
-        this.user_id = user_id;
+    public void setCreated_by(String created_by) {
+        this.created_by = created_by;
     }
 }
 

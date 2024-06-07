@@ -4,6 +4,7 @@ import com.jewelrymanagement.dto.UserDTO;
 import com.jewelrymanagement.entity.LoginRequest;
 import com.jewelrymanagement.entity.LoginResponse;
 import com.jewelrymanagement.service.UserService;
+import com.jewelrymanagement.util.JwtTokenProvider;
 import com.jewelrymanagement.util.StatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +25,9 @@ public class UserController {
     private UserService userService;
     @Value("${jwt.access-token-expiration-in-ms}")
     private long accessTokenExpirationInMs;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/manager/users")
     public ResponseEntity<StatusResponse<List<UserDTO>>> getAllUsers(){
@@ -83,8 +87,8 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<StatusResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
-        StatusResponse<LoginResponse> statusResponse = userService.login(loginRequest);
+    public ResponseEntity<StatusResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response, UserDTO userDTO) {
+        StatusResponse<LoginResponse> statusResponse = userService.login(loginRequest, response);
         if ("Success".equals(statusResponse.getStatus())) {
             // Lưu access token và refresh token vào cookie
             LoginResponse loginResponse = statusResponse.getData();
@@ -101,7 +105,14 @@ public class UserController {
             refreshTokenCookie.setPath("/");
             refreshTokenCookie.setMaxAge((int) (accessTokenExpirationInMs * 7 / 1000));
             response.addCookie(refreshTokenCookie);
-
+// Lưu username vào cookie
+// Lưu username vào một cookie riêng
+            Cookie usernameCookie = new Cookie("username", loginResponse.getUsername());
+            usernameCookie.setHttpOnly(true);
+            usernameCookie.setSecure(true);
+            usernameCookie.setPath("/");
+            usernameCookie.setMaxAge((int) (accessTokenExpirationInMs / 1000));
+            response.addCookie(usernameCookie);
             return ResponseEntity.ok(statusResponse);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(statusResponse);

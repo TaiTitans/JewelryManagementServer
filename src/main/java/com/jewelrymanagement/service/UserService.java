@@ -10,6 +10,8 @@ import com.jewelrymanagement.repository.RoleRepository;
 import com.jewelrymanagement.repository.UserRepository;
 import com.jewelrymanagement.util.JwtTokenProvider;
 import com.jewelrymanagement.util.StatusResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -62,9 +64,11 @@ public class UserService {
 
     public StatusResponse<UserDTO> createUser(UserDTO userDTO) {
         try {
-            if (getUsernameRepository.findByUsername(userDTO.getUsername()).isPresent()) {
-                return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),"Error", "Username already exists", null);
+            User existingUser = getUsernameRepository.findByUsername(userDTO.getUsername());
+            if (existingUser != null) {
+                return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Username already exists", null);
             }
+
 
             // Lấy các vai trò từ cơ sở dữ liệu dựa trên tên vai trò trong UserDTO
             Set<Role> roles = new HashSet<>();
@@ -179,16 +183,25 @@ public class UserService {
     }
 
 
-    public StatusResponse<LoginResponse> login(LoginRequest loginRequest) {
+    public StatusResponse<LoginResponse> login(LoginRequest loginRequest, HttpServletResponse response) {
         try {
-            Optional<User> userOptional = getUsernameRepository.findByUsername(loginRequest.getUsername());
-            if (userOptional.isPresent()) {
-                User user = userOptional.get();
+            User user = getUsernameRepository.findByUsername(loginRequest.getUsername());
+            if (user != null) {
                 if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
                     UserDTO userDTO = convertToDto(user);
                     String accessToken = jwtTokenProvider.generateAccessToken(userDTO);
                     String refreshToken = jwtTokenProvider.generateRefreshToken(userDTO);
-                    LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken);
+                    String username = user.getUsername();
+
+                    // Tạo cookie username
+                    Cookie usernameCookie = new Cookie("username", username);
+                    usernameCookie.setHttpOnly(true);
+                    usernameCookie.setSecure(true);
+                    usernameCookie.setPath("/");
+                    usernameCookie.setMaxAge((int) (accessTokenExpirationInMs / 1000));
+                    response.addCookie(usernameCookie);
+
+                    LoginResponse loginResponse = new LoginResponse(accessToken, refreshToken, username);
                     return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Success", "Login successful", loginResponse);
                 } else {
                     return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Invalid username or password", null);
@@ -200,5 +213,4 @@ public class UserService {
             return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", ex.getMessage(), null);
         }
     }
-
 }
