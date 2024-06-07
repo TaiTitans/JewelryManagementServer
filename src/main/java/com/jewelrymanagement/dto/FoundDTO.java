@@ -11,7 +11,8 @@ public class FoundDTO {
     private BigDecimal amount;
     private String description;
     private LocalDate transactionDate;
-    private int userId;
+    private String created_by;
+
     // Getters and Setters
     public int getFoundID() {
         return foundID;
@@ -53,10 +54,12 @@ public class FoundDTO {
         this.transactionDate = transactionDate;
     }
 
-    public int getUserId() {
-        return userId;
+
+    public String getCreated_by() {
+        return created_by;
     }
-    public void setUserId(int userId) {
-        this.userId = userId;
+
+    public void setCreated_by(String created_by) {
+        this.created_by = created_by;
     }
 }

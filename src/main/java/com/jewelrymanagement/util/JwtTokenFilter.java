@@ -5,6 +5,7 @@ import com.jewelrymanagement.entity.User;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             String token = jwtTokenProvider.getTokenFromRequest(request);
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 logger.debug("Valid JWT token found, setting authentication context");
-                setAuthenticationContext(token, request);
+                setAuthenticationContext(token, request, response);
             } else {
                 logger.debug("No valid JWT token found");
             }
@@ -47,7 +48,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void setAuthenticationContext(String token, HttpServletRequest request) {
+    private void setAuthenticationContext(String token, HttpServletRequest request, HttpServletResponse response) {
         UserDetails userDetails = getUserDetails(token);
 
         UsernamePasswordAuthenticationToken
@@ -57,6 +58,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+//        String cleanedUsername = userDetails.getUsername().replaceAll("[^a-zA-Z0-9_-]", "");
+//        Cookie usernameCookie = new Cookie("username", cleanedUsername);
+//        usernameCookie.setMaxAge(7200); // 2 hour expiration time
+//        response.addCookie(usernameCookie);
     }
 
     private UserDetails getUserDetails(String token) {

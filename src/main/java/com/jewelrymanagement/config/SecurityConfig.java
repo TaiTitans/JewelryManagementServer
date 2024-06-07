@@ -32,10 +32,10 @@ public class SecurityConfig{
         logger.info("Configuring security filter chain");
         http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/common/**").hasAnyRole("STAFF", "MANAGER", "ADMIN")
                         .requestMatchers("/api/**").hasRole("ADMIN")
                         .requestMatchers("/api/manager/**").hasRole("MANAGER")
                         .requestMatchers("/api/staff/**").hasRole("STAFF")
-                        .requestMatchers("/api/common/**").hasAnyRole("STAFF", "MANAGER")
                         .anyRequest().authenticated()
         ).csrf(csrf -> csrf.disable())
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);

@@ -4,6 +4,7 @@ import com.jewelrymanagement.dto.FoundDTO;
 import com.jewelrymanagement.repository.FoundRepository;
 import com.jewelrymanagement.service.FoundsService;
 import com.jewelrymanagement.util.StatusResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -47,8 +48,8 @@ public class FoundsController {
 
 
     @PostMapping("/manager/found")
-    public ResponseEntity<StatusResponse<FoundDTO>> createFound(@Valid @RequestBody FoundDTO foundDTO) {
-        StatusResponse<FoundDTO> response = foundsService.createFound(foundDTO);
+    public ResponseEntity<StatusResponse<FoundDTO>> createFound(@RequestBody FoundDTO foundDTO, HttpServletRequest request) {
+        StatusResponse<FoundDTO> response = foundsService.createFound(foundDTO, request);
         if ("Success".equals(response.getStatus())) {
             return ResponseEntity.ok(response);
         } else {
@@ -57,8 +58,8 @@ public class FoundsController {
     }
 
     @PutMapping("/manager/found/{id}")
-    public ResponseEntity<StatusResponse<FoundDTO>> updateFound(@PathVariable int id, @RequestBody FoundDTO foundDTO) {
-        StatusResponse<FoundDTO> response = foundsService.updateFound(id, foundDTO);
+    public ResponseEntity<StatusResponse<FoundDTO>> updateFound(@PathVariable int id, @RequestBody FoundDTO foundDTO, HttpServletRequest request) {
+        StatusResponse<FoundDTO> response = foundsService.updateFound(id, foundDTO, request);
         if ("Success".equals(response.getStatus())) {
             return ResponseEntity.ok(response);
         } else if("Found not found".equals(response.getMessage())){

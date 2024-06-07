@@ -7,6 +7,8 @@ import com.jewelrymanagement.exceptions.Found.TransactionType;
 import com.jewelrymanagement.repository.FoundRepository;
 import com.jewelrymanagement.repository.UserRepository;
 import com.jewelrymanagement.util.StatusResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +26,13 @@ public class FoundsService {
     @Autowired
     private UserRepository userRepository;
 
-    private Found convertToEntity(FoundDTO foundDTO, UserRepository userRepository){
+    private Found convertToEntity(FoundDTO foundDTO){
         Found found = new Found();
         found.setAmount(foundDTO.getAmount());
         found.setDescription(foundDTO.getDescription());
         found.setTransactionType(com.jewelrymanagement.exceptions.Found.TransactionType.valueOf(foundDTO.getTransactionType().name()));
         found.setTransactionDate(foundDTO.getTransactionDate());
-        User user = userRepository.findById(foundDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        found.setUser_id(user);
+       found.setCreated_by(foundDTO.getCreated_by());
         return found;
     }
 
@@ -43,7 +43,7 @@ public class FoundsService {
         foundDTO.setDescription(found.getDescription());
         foundDTO.setTransactionType(com.jewelrymanagement.exceptions.Found.TransactionType.valueOf(found.getTransactionType().name()));
         foundDTO.setTransactionDate(found.getTransactionDate());
-        foundDTO.setUserId(found.getUser_id().getUser_id());
+        foundDTO.setCreated_by(found.getCreated_by());
         return foundDTO;
     }
 
@@ -84,12 +84,13 @@ public StatusResponse<FoundDTO> getFoundById(int id){
     }
 }
 
-public StatusResponse<FoundDTO> createFound(FoundDTO foundDTO){
+public StatusResponse<FoundDTO> createFound(FoundDTO foundDTO, HttpServletRequest request){
     try{
-        Found found = convertToEntity(foundDTO, userRepository);
+        String username = getUsernameFromCookie(request);
+        Found found = convertToEntity(foundDTO);
 
         found.setTransactionDate(LocalDate.now());
-
+        found.setCreated_by(username);
 
         found = foundRepository.save(found);
         FoundDTO createdFoundDTO = convertToDTO(found);
@@ -99,11 +100,13 @@ public StatusResponse<FoundDTO> createFound(FoundDTO foundDTO){
     }
 }
 
-public StatusResponse<FoundDTO> updateFound(int id,FoundDTO foundsDTO){
+public StatusResponse<FoundDTO> updateFound(int id,FoundDTO foundsDTO, HttpServletRequest request){
     try{
+        String username = getUsernameFromCookie(request);
         if(foundRepository.existsById(id)){
-            Found found = convertToEntity(foundsDTO, userRepository);
+            Found found = convertToEntity(foundsDTO);
             found.setFoundId(id);
+            found.setCreated_by(username);
             found.setTransactionDate(LocalDate.now());
             found = foundRepository.save(found);
             FoundDTO updatedFoundDTO = convertToDTO(found);
@@ -193,6 +196,16 @@ public StatusResponse<Map<String, BigDecimal>> getDailySummary(LocalDate date){
     }
 
 
-
+    private String getUsernameFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("username")) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
 
 }
