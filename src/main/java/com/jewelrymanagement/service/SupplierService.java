@@ -3,7 +3,7 @@ package com.jewelrymanagement.service;
 import com.jewelrymanagement.dto.SupplierDTO;
 import com.jewelrymanagement.entity.Supplier;
 import com.jewelrymanagement.repository.SupplierRepository;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;

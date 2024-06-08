@@ -1,11 +1,11 @@
 package com.jewelrymanagement.controller;
 
 import com.jewelrymanagement.dto.UserDTO;
-import com.jewelrymanagement.entity.LoginRequest;
-import com.jewelrymanagement.entity.LoginResponse;
+import com.jewelrymanagement.model.LoginRequest;
+import com.jewelrymanagement.model.LoginResponse;
 import com.jewelrymanagement.service.UserService;
 import com.jewelrymanagement.util.JwtTokenProvider;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

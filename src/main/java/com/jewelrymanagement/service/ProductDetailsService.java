@@ -5,7 +5,7 @@ import com.jewelrymanagement.entity.Product;
 import com.jewelrymanagement.entity.ProductDetails;
 import com.jewelrymanagement.repository.ProductDetailsRepository;
 import com.jewelrymanagement.repository.ProductRepository;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

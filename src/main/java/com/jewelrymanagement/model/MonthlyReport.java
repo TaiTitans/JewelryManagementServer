@@ -1,4 +1,4 @@
-package com.jewelrymanagement.entity;
+package com.jewelrymanagement.model;
 
 import java.math.BigDecimal;
 

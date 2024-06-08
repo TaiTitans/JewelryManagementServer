@@ -2,11 +2,10 @@ package com.jewelrymanagement.service;
 
 import com.jewelrymanagement.dto.FoundDTO;
 import com.jewelrymanagement.entity.Found;
-import com.jewelrymanagement.entity.User;
 import com.jewelrymanagement.exceptions.Found.TransactionType;
 import com.jewelrymanagement.repository.FoundRepository;
 import com.jewelrymanagement.repository.UserRepository;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

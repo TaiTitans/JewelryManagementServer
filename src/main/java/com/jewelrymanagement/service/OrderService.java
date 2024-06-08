@@ -2,13 +2,13 @@ package com.jewelrymanagement.service;
 
 import com.jewelrymanagement.dto.OrderDTO;
 import com.jewelrymanagement.entity.Customer;
-import com.jewelrymanagement.entity.MonthlyReport;
+import com.jewelrymanagement.model.MonthlyReport;
 import com.jewelrymanagement.entity.Order;
 import com.jewelrymanagement.exceptions.OrderStatus;
 import com.jewelrymanagement.repository.CustomerRepository;
 import com.jewelrymanagement.repository.GetUsernameRepository;
 import com.jewelrymanagement.repository.OrderRepository;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -188,6 +187,16 @@ public class OrderService {
         }
 
         return new MonthlyReport(totalOrders, totalAmount);
+    }
+
+    public BigDecimal getTotalAmount() {
+        List<Order> orders = orderRepository.findAll();
+
+        BigDecimal totalAmount = orders.stream().filter(order -> order.getStatus() == OrderStatus.COMPLETE)
+                .map(order -> BigDecimal.valueOf(order.getTotal_amount()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalAmount;
     }
 
 
