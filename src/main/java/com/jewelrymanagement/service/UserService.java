@@ -1,15 +1,15 @@
 package com.jewelrymanagement.service;
 
 import com.jewelrymanagement.dto.UserDTO;
-import com.jewelrymanagement.entity.LoginRequest;
-import com.jewelrymanagement.entity.LoginResponse;
+import com.jewelrymanagement.model.LoginRequest;
+import com.jewelrymanagement.model.LoginResponse;
 import com.jewelrymanagement.entity.Role;
 import com.jewelrymanagement.entity.User;
 import com.jewelrymanagement.repository.GetUsernameRepository;
 import com.jewelrymanagement.repository.RoleRepository;
 import com.jewelrymanagement.repository.UserRepository;
 import com.jewelrymanagement.util.JwtTokenProvider;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;

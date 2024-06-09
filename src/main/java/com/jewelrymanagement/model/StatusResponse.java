@@ -1,4 +1,4 @@
-package com.jewelrymanagement.util;
+package com.jewelrymanagement.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

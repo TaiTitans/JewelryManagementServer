@@ -1,4 +1,4 @@
-package com.jewelrymanagement.entity;
+package com.jewelrymanagement.model;
 
 public class LoginResponse {
     public LoginResponse(String accessToken, String refreshToken, String username) {

@@ -2,7 +2,7 @@ package com.jewelrymanagement.controller;
 
 import com.jewelrymanagement.dto.SupplierDTO;
 import com.jewelrymanagement.service.SupplierService;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

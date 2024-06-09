@@ -2,13 +2,13 @@ package com.jewelrymanagement.service;
 
 import com.jewelrymanagement.dto.OrderDTO;
 import com.jewelrymanagement.entity.Customer;
-import com.jewelrymanagement.entity.MonthlyReport;
+import com.jewelrymanagement.model.MonthlyReport;
 import com.jewelrymanagement.entity.Order;
 import com.jewelrymanagement.exceptions.OrderStatus;
 import com.jewelrymanagement.repository.CustomerRepository;
 import com.jewelrymanagement.repository.GetUsernameRepository;
 import com.jewelrymanagement.repository.OrderRepository;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -159,7 +158,7 @@ public class OrderService {
 
         BigDecimal totalAmount = orders.stream()
                 .filter(order -> order.getStatus() == OrderStatus.COMPLETE) // Chỉ tính toán với trạng thái COMPLETE
-                .map(order -> BigDecimal.valueOf(order.getTotal_amount()))
+                .map(Order::getTotal_amount) // Trực tiếp lấy giá trị BigDecimal bằng method reference
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return totalAmount;
@@ -183,11 +182,22 @@ public class OrderService {
         for (Order order : orders) {
             if (order.getStatus() == OrderStatus.COMPLETE) { // Chỉ tính toán với trạng thái COMPLETE
                 totalOrders++;
-                totalAmount = totalAmount.add(BigDecimal.valueOf(order.getTotal_amount()));
+                totalAmount = totalAmount.add(order.getTotal_amount()); // Trực tiếp sử dụng giá trị BigDecimal
             }
         }
 
+
         return new MonthlyReport(totalOrders, totalAmount);
+    }
+
+    public BigDecimal getTotalAmount() {
+        List<Order> orders = orderRepository.findAll();
+
+        BigDecimal totalAmount = orders.stream().filter(order -> order.getStatus() == OrderStatus.COMPLETE)
+                .map(Order::getTotal_amount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalAmount;
     }
 
 

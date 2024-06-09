@@ -4,7 +4,7 @@ package com.jewelrymanagement.service;
 import com.jewelrymanagement.dto.CustomerDTO;
 import com.jewelrymanagement.entity.Customer;
 import com.jewelrymanagement.repository.CustomerRepository;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

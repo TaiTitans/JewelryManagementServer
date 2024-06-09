@@ -1,11 +1,11 @@
 package com.jewelrymanagement.controller;
 
 import com.jewelrymanagement.dto.OrderDTO;
-import com.jewelrymanagement.entity.MonthlyReport;
+import com.jewelrymanagement.model.MonthlyReport;
 import com.jewelrymanagement.entity.Order;
 import com.jewelrymanagement.exceptions.OrderStatus;
 import com.jewelrymanagement.service.OrderService;
-import com.jewelrymanagement.util.StatusResponse;
+import com.jewelrymanagement.model.StatusResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -90,5 +90,9 @@ public class OrderController {
         return updatedOrder;
     }
 
+    @GetMapping("/common/order/totalamount")
+    public BigDecimal getTotalAmount() {
+        return orderService.getTotalAmount();
+    }
 
 }
