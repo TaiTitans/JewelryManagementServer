@@ -9,7 +9,7 @@ import java.util.Date;
 public class OrderDTO {
     public Integer order_id;
     public Integer customer_id;
-    public Integer total_amount;
+    public BigDecimal total_amount;
     public BigDecimal shipping_fee;
     public String notes;
     public PaymentMethod payment_method;

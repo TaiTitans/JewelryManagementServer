@@ -158,7 +158,7 @@ public class OrderService {
 
         BigDecimal totalAmount = orders.stream()
                 .filter(order -> order.getStatus() == OrderStatus.COMPLETE) // Chỉ tính toán với trạng thái COMPLETE
-                .map(order -> BigDecimal.valueOf(order.getTotal_amount()))
+                .map(Order::getTotal_amount) // Trực tiếp lấy giá trị BigDecimal bằng method reference
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return totalAmount;
@@ -182,9 +182,10 @@ public class OrderService {
         for (Order order : orders) {
             if (order.getStatus() == OrderStatus.COMPLETE) { // Chỉ tính toán với trạng thái COMPLETE
                 totalOrders++;
-                totalAmount = totalAmount.add(BigDecimal.valueOf(order.getTotal_amount()));
+                totalAmount = totalAmount.add(order.getTotal_amount()); // Trực tiếp sử dụng giá trị BigDecimal
             }
         }
+
 
         return new MonthlyReport(totalOrders, totalAmount);
     }
@@ -193,7 +194,7 @@ public class OrderService {
         List<Order> orders = orderRepository.findAll();
 
         BigDecimal totalAmount = orders.stream().filter(order -> order.getStatus() == OrderStatus.COMPLETE)
-                .map(order -> BigDecimal.valueOf(order.getTotal_amount()))
+                .map(Order::getTotal_amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return totalAmount;

@@ -11,7 +11,7 @@ import java.util.Date;
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 public class Order {
-    public Order(Integer order_id, Customer customer, Integer total_amount, BigDecimal shipping_fee, String notes, PaymentMethod payment_method, OrderStatus status, Date created_at, Date updated_at, String created_by) {
+    public Order(Integer order_id, Customer customer, BigDecimal total_amount, BigDecimal shipping_fee, String notes, PaymentMethod payment_method, OrderStatus status, Date created_at, Date updated_at, String created_by) {
         this.order_id = order_id;
         this.customer = customer;
         this.total_amount = total_amount;
@@ -40,11 +40,11 @@ public class Order {
         this.customer = customer;
     }
 
-    public Integer getTotal_amount() {
+    public BigDecimal getTotal_amount() {
         return total_amount;
     }
 
-    public void setTotal_amount(Integer total_amount) {
+    public void setTotal_amount(BigDecimal total_amount) {
         this.total_amount = total_amount;
     }
 
@@ -104,7 +104,7 @@ public class Order {
     @JoinColumn(name="customer_id")
     private Customer customer;
 
-    private Integer total_amount;
+    private BigDecimal total_amount;
     private BigDecimal shipping_fee;
     private String notes;
 
