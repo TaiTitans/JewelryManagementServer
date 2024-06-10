@@ -124,7 +124,7 @@ public class ProductDetailsService {
         }
     }
 
-    public StatusResponse<?> deleteProductDetailsByProductId(Integer id) {
+    public StatusResponse<ProductDetailsDTO> deleteProductDetailsByProductId(Integer id) {
         try {
             productDetailsRepository.deleteAllByProductId(id);
 

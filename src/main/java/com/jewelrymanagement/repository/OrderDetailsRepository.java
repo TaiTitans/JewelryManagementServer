@@ -16,8 +16,8 @@ public interface OrderDetailsRepository extends JpaRepository<OrderDetails, Inte
     void deleteOrderDetailsByOrderId(Integer order_id);
 
 
-    @Query("SELECT od FROM OrderDetails od WHERE od.product.product_id = :productId AND od.product_details_id = :productDetailsId")
-    Optional<OrderDetails> findByProductIdAndProductDetailsId(Integer productId, Integer productDetailsId);
+    @Query("SELECT od FROM OrderDetails od WHERE od.product.product_id = :productId AND od.productdetails.product_details_id = :productDetailsId")
+    Optional<OrderDetails> findByProductIdAndProductDetailsId(Integer productId,Integer productDetailsId);
 
 
 }

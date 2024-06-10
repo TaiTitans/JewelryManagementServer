@@ -38,7 +38,7 @@ public class OrderDetailsService {
         orderDetailsDTO.order_details_id = orderDetails.getOrder_details_id();
         orderDetailsDTO.order_id = orderDetails.getOrder_id().getOrder_id();
         orderDetailsDTO.product_id = orderDetails.getProduct().getProduct_id();
-        orderDetailsDTO.product_details_id = orderDetails.getProduct_details_id();
+        orderDetailsDTO.product_details_id = orderDetails.getProductdetails().getProduct_details_id();
         orderDetailsDTO.quantity = orderDetails.getQuantity();
         orderDetailsDTO.unit_price = orderDetails.getUnit_price();
         orderDetailsDTO.discount = orderDetails.getDiscount();
@@ -52,7 +52,8 @@ public class OrderDetailsService {
         orderDetails.setOrder_id(orderID);
         Product productID = productRepository.findById(orderDetailsDTO.product_id).orElseThrow();
         orderDetails.setProduct(productID);
-        orderDetails.setProduct_details_id(orderDetailsDTO.product_details_id);
+        ProductDetails productDetailsID = productDetailsRepository.findById(orderDetailsDTO.product_details_id).orElseThrow();
+        orderDetails.setProductdetails(productDetailsID);
         orderDetails.setQuantity(orderDetailsDTO.quantity);
         orderDetails.setUnit_price(orderDetailsDTO.unit_price);
         orderDetails.setDiscount(orderDetailsDTO.discount);
@@ -86,25 +87,9 @@ public class OrderDetailsService {
 
     public StatusResponse<OrderDetailsDTO> addOrderDetails(OrderDetailsDTO orderDetailsDTO) {
         try {
-            Optional<ProductDetails> productDetailsOptional = productDetailsRepository.findById(orderDetailsDTO.product_details_id);
-
             Order order = orderRepository.findById(orderDetailsDTO.order_id).orElseThrow();
 
-            if (productDetailsOptional.isEmpty()) {
-                return new StatusResponse<>(
-                        UUID.randomUUID().toString(),
-                        LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-                        "Error",
-                        "Product details not found",
-                        null
-                );
-            }
-
-            ProductDetails productDetails = productDetailsOptional.get();
-
-
-            if (productDetails.getQuantity() < orderDetailsDTO.quantity)
-            {
+            if (!isProductDetailsQuantitySufficient(orderDetailsDTO.product_details_id, orderDetailsDTO.quantity)) {
                 return new StatusResponse<>(
                         UUID.randomUUID().toString(),
                         LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
@@ -114,10 +99,7 @@ public class OrderDetailsService {
                 );
             }
 
-            OrderDetails orderDetailsSave = convertToEntity(orderDetailsDTO);
-            orderDetailsSave.setUnit_price(productDetails.getPrice().multiply(BigDecimal.valueOf(orderDetailsDTO.quantity)));
-            orderDetailsSave.setProduct_details_id(orderDetailsDTO.product_details_id);
-            orderDetailsSave = orderDetailsRepository.save(orderDetailsSave);
+            OrderDetails orderDetailsSave = saveOrderDetails(orderDetailsDTO);
             OrderDetailsDTO orderDetailsDTOSave = convertToDTO(orderDetailsSave);
             return new StatusResponse<>(
                     UUID.randomUUID().toString(),
@@ -148,12 +130,8 @@ public class OrderDetailsService {
             OrderDetails existingOrderDetails = orderDetailsRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Order details not found"));
 
-            // Lấy thông tin sản phẩm
-            ProductDetails productDetails = productDetailsRepository.findById(orderDetailsDTO.product_id)
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
-
             // Kiểm tra số lượng sản phẩm
-            if (productDetails.getQuantity() < orderDetailsDTO.quantity) {
+            if (!isProductDetailsQuantitySufficient(orderDetailsDTO.product_details_id, orderDetailsDTO.quantity)) {
                 return new StatusResponse<>(
                         UUID.randomUUID().toString(),
                         LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
@@ -166,7 +144,16 @@ public class OrderDetailsService {
             // Cập nhật OrderDetails
             OrderDetails orderDetailsSave = convertToEntity(orderDetailsDTO);
             orderDetailsSave.setOrder_details_id(id);
-            OrderDetails updatedOrderDetails = orderDetailsRepository.save(existingOrderDetails);
+
+            // Tính toán lại unit_price
+            Optional<ProductDetails> productDetailsOptional = productDetailsRepository.findById(orderDetailsDTO.product_details_id);
+            if (productDetailsOptional.isPresent()) {
+                ProductDetails productDetails = productDetailsOptional.get();
+                BigDecimal unitPrice = productDetails.getPrice().multiply(BigDecimal.valueOf(orderDetailsDTO.quantity));
+                orderDetailsSave.setUnit_price(unitPrice.subtract(unitPrice.multiply(orderDetailsDTO.discount)));
+            }
+
+            OrderDetails updatedOrderDetails = orderDetailsRepository.save(orderDetailsSave);
 
             // Trả về phản hồi thành công
             OrderDetailsDTO updatedOrderDetailsDTO = convertToDTO(updatedOrderDetails);
@@ -218,5 +205,31 @@ public StatusResponse<?> deleteAllOrderDetailsOfOrderId(Integer id) {
             return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Delete error", null);
         }
 }
+
+
+
+    // Kiểm tra sản phẩm có đủ số lượng không
+    private boolean isProductDetailsQuantitySufficient(int productDetailsId, int quantity) {
+        Optional<ProductDetails> productDetailsOptional = productDetailsRepository.findById(productDetailsId);
+        if (productDetailsOptional.isEmpty()) {
+            return false;
+        }
+        ProductDetails productDetails = productDetailsOptional.get();
+        return productDetails.getQuantity() >= quantity;
+    }
+
+    // Tạo mới OrderDetails và lưu vào cơ sở dữ liệu
+    private OrderDetails saveOrderDetails(OrderDetailsDTO orderDetailsDTO) {
+        OrderDetails orderDetails = convertToEntity(orderDetailsDTO);
+        Optional<ProductDetails> productDetailsOptional = productDetailsRepository.findById(orderDetailsDTO.product_details_id);
+        if (productDetailsOptional.isPresent()) {
+            ProductDetails productDetails = productDetailsOptional.get();
+            BigDecimal unitPrice = productDetails.getPrice().multiply(BigDecimal.valueOf(orderDetailsDTO.quantity));
+            orderDetails.setUnit_price(unitPrice.subtract(unitPrice.multiply(orderDetailsDTO.discount)));
+        }
+        return orderDetailsRepository.save(orderDetails);
+    }
+
+
 
 }

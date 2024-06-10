@@ -1,6 +1,7 @@
 package com.jewelrymanagement.controller;
 
 import com.jewelrymanagement.dto.OrderDTO;
+import com.jewelrymanagement.dto.OrderInvoiceDTO;
 import com.jewelrymanagement.model.MonthlyReport;
 import com.jewelrymanagement.entity.Order;
 import com.jewelrymanagement.exceptions.OrderStatus;
@@ -83,10 +84,10 @@ public class OrderController {
         return report;
     }
     @PatchMapping("/common/order/{orderId}/status")
-    public Order updateOrderStatus(
+    public OrderDTO updateOrderStatus(
             @PathVariable Integer orderId,
             @RequestBody OrderStatus status) {
-        Order updatedOrder = orderService.updateOrderStatus(orderId, status);
+        OrderDTO updatedOrder = orderService.updateOrderStatus(orderId, status);
         return updatedOrder;
     }
 
@@ -95,4 +96,10 @@ public class OrderController {
         return orderService.getTotalAmount();
     }
 
+    //Xuat hoa don
+    @GetMapping("/common/order/invoice/{orderId}")
+    public ResponseEntity<OrderInvoiceDTO> getOrderInvoice(@PathVariable Integer orderId) {
+        OrderInvoiceDTO orderInvoiceDTO = orderService.getOrderInvoice(orderId);
+        return ResponseEntity.ok(orderInvoiceDTO);
+    }
 }
