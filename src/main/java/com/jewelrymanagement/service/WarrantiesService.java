@@ -14,6 +14,7 @@ import com.jewelrymanagement.entity.Product;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -70,7 +71,7 @@ public class WarrantiesService {
             Optional<Warranties> warrantiesOptional = warrantiesRepository.findById(id);
             if(warrantiesOptional.isPresent()){
                 Warranties warranties = warrantiesOptional.get();
-                WarrantiesDTO warrantiesDTO = new WarrantiesDTO();
+                WarrantiesDTO warrantiesDTO = convertToDTO(warranties);
                 return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Success", "Warranty retrieved successfully", warrantiesDTO);
             }else {
                 return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Warranty not found", null);
@@ -88,12 +89,13 @@ public class WarrantiesService {
         }
     }
 
-    public Warranties updateWarrantyStatus(Integer id, WarrantyStatus newStatus){
+    public WarrantiesDTO updateWarrantyStatus(Integer id, WarrantyStatus newStatus) {
         Warranties warranties = warrantiesRepository.findById(id).orElseThrow();
         warranties.setWarranty_status(newStatus);
-        return warrantiesRepository.save(warranties);
+        warrantiesRepository.save(warranties);
+        WarrantiesDTO warrantiesDTO = convertToDTO(warranties);
+        return warrantiesDTO;
     }
-
     public StatusResponse<List<WarrantiesDTO>> getAllWarrantiesByCustomerId(Integer id){
         try{
             List<Warranties> warrantiesList = warrantiesRepository.findWarrantyByCustomerId(id);
@@ -104,7 +106,7 @@ public class WarrantiesService {
         }
     }
 
-    public StatusResponse<?> deleteAllWarrantiesOfCustomerId(Integer id){
+    public StatusResponse<WarrantiesDTO> deleteAllWarrantiesOfCustomerId(Integer id){
         try{
             warrantiesRepository.deleteWarrantiesByCustomer(id);
             return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Success", "Warranties delete successfully", null);
@@ -114,8 +116,41 @@ public class WarrantiesService {
     }
 
     //Add
+public StatusResponse<WarrantiesDTO> addWarranties(WarrantiesDTO warrantiesDTO){
+        try{
+            Product productCheck = productRepository.findById(warrantiesDTO.product_id).orElseThrow(()->new Exception("Product not found"));
+            Customer customerCheck = customerRepository.findById(warrantiesDTO.customer_id).orElseThrow(()->new Exception("Customer not found"));
+            Warranties warranties = convertToEntity(warrantiesDTO);
+            warranties.setRequest_date(new Date());
+            warranties.setResolved_date(new Date());
+            warranties.setWarranty_status(WarrantyStatus.valueOf("WAITING"));
+            warrantiesRepository.save(warranties);
+            WarrantiesDTO warrantiesSave = convertToDTO(warranties);
+            return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Success", "Warranty created successfully", warrantiesSave);
 
+        }catch (Exception e){
+            return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Create error: " + e.getMessage(), null);
+        }
+}
 
     //Update
+public StatusResponse<WarrantiesDTO> updateWarranties(Integer id,WarrantiesDTO warrantiesDTO){
+        try{
+            if(warrantiesRepository.existsById(id)){
+                Warranties warranties = warrantiesRepository.findById(id).orElseThrow(()->new Exception("Warranties not found"));
+                Warranties warrantiesUpdate = convertToEntity(warrantiesDTO);
+                warrantiesUpdate.setWarranty_id(id);
+                warrantiesUpdate.setResolved_date(new Date());
+                warrantiesRepository.save(warrantiesUpdate);
+                WarrantiesDTO warrantiesSave = convertToDTO(warrantiesUpdate);
+                return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Success", "Order update successfully", warrantiesSave);
+            }else{
+                return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Warranty not found", null);
+            }
+        }catch (Exception e){
+            return new StatusResponse<>(UUID.randomUUID().toString(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), "Error", "Update error", null);
+        }
+}
+
 
 }

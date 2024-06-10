@@ -81,7 +81,7 @@ public class ProductDetailsController {
 
     @DeleteMapping("/manager/product/{id}/details")
     public ResponseEntity<StatusResponse<ProductDetailsDTO>> deleteProductDetailsByProductId(@PathVariable Integer id){
-        StatusResponse<ProductDetailsDTO> response = productDetailsService.deteteProductDetails(id);
+        StatusResponse<ProductDetailsDTO> response = productDetailsService.deleteProductDetailsByProductId(id);
         if("Success".equals(response.getStatus())){
             return ResponseEntity.ok(response);
         }else{

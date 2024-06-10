@@ -7,11 +7,10 @@ import java.util.Date;
 @Entity
 @Table(name="warranties")
 public class Warranties {
-    public Warranties(Integer warranty_id, Product product, Customer customer, Integer warranty_period, WarrantyStatus warranty_status, Date request_date, Date resolved_date, String description) {
+    public Warranties(Integer warranty_id, Product product, Customer customer, WarrantyStatus warranty_status, Date request_date, Date resolved_date, String description) {
         this.warranty_id = warranty_id;
         this.product = product;
         this.customer = customer;
-        this.warranty_period = warranty_period;
         this.warranty_status = warranty_status;
         this.request_date = request_date;
         this.resolved_date = resolved_date;
@@ -46,13 +45,6 @@ public class Warranties {
         this.customer = customer;
     }
 
-    public Integer getWarranty_period() {
-        return warranty_period;
-    }
-
-    public void setWarranty_period(Integer warranty_period) {
-        this.warranty_period = warranty_period;
-    }
 
     public WarrantyStatus getWarranty_status() {
         return warranty_status;
@@ -90,7 +82,6 @@ public class Warranties {
     @JoinColumn(name="customer_id")
     private Customer customer;
 
-    private Integer warranty_period;
 
     @Enumerated(EnumType.STRING)
     private WarrantyStatus warranty_status;

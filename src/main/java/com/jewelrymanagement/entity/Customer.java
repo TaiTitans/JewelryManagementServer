@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "customers")
 public class Customer {
-    public Customer(Integer customer_id, String customer_name, String phone, BigDecimal total_spent, Integer total_orders, String address, CustomerGroup customer_group) {
+    public Customer(Integer customer_id, String customer_name, String phone, BigDecimal total_points, BigDecimal total_orders, String address, CustomerGroup customer_group) {
         this.customer_id = customer_id;
         this.customer_name = customer_name;
         this.phone = phone;
-        this.total_spent = total_spent;
+        this.total_points = total_points;
         this.total_orders = total_orders;
         this.address = address;
         this.customer_group = customer_group;
@@ -42,19 +42,19 @@ public class Customer {
         this.phone = phone;
     }
 
-    public BigDecimal getTotal_spent() {
-        return total_spent;
+    public BigDecimal getTotal_points() {
+        return total_points;
     }
 
-    public void setTotal_spent(BigDecimal total_spent) {
-        this.total_spent = total_spent;
+    public void setTotal_points(BigDecimal total_points) {
+        this.total_points = total_points;
     }
 
-    public Integer getTotal_orders() {
+    public BigDecimal getTotal_orders() {
         return total_orders;
     }
 
-    public void setTotal_orders(Integer total_orders) {
+    public void setTotal_orders(BigDecimal total_orders) {
         this.total_orders = total_orders;
     }
 
@@ -79,8 +79,8 @@ public class Customer {
     private Integer customer_id;
     private String customer_name;
     private String phone;
-    private BigDecimal total_spent;
-    private Integer total_orders;
+    private BigDecimal total_points;
+    private BigDecimal total_orders;
     private String address;
     @Enumerated(EnumType.STRING)
     private CustomerGroup customer_group;

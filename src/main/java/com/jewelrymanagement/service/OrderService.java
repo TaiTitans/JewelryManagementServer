@@ -1,14 +1,17 @@
 package com.jewelrymanagement.service;
 
 import com.jewelrymanagement.dto.OrderDTO;
+import com.jewelrymanagement.dto.OrderDetailsDTO;
+import com.jewelrymanagement.dto.OrderInvoiceDTO;
 import com.jewelrymanagement.entity.Customer;
+import com.jewelrymanagement.entity.OrderDetails;
+import com.jewelrymanagement.entity.ProductDetails;
 import com.jewelrymanagement.model.MonthlyReport;
 import com.jewelrymanagement.entity.Order;
 import com.jewelrymanagement.exceptions.OrderStatus;
-import com.jewelrymanagement.repository.CustomerRepository;
-import com.jewelrymanagement.repository.GetUsernameRepository;
-import com.jewelrymanagement.repository.OrderRepository;
+import com.jewelrymanagement.repository.*;
 import com.jewelrymanagement.model.StatusResponse;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,10 @@ public class OrderService {
     private GetUsernameRepository GetUsernameRepository;
     @Autowired
     private GetUsernameRepository getUsernameRepository;
+    @Autowired
+    private OrderDetailsRepository orderDetailsRepository;
+    @Autowired
+    private ProductDetailsRepository productDetailsRepository;
 
     public OrderDTO convertToDTO(Order order){
         OrderDTO orderDTO = new OrderDTO();
@@ -201,11 +208,99 @@ public class OrderService {
     }
 
 
-    public Order updateOrderStatus(Integer orderId, OrderStatus newStatus) {
+    public OrderDTO updateOrderStatus(Integer orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow();
 
         order.setStatus(newStatus);
-        return orderRepository.save(order);
+        orderRepository.save(order);
+        OrderDTO orderDTO = convertToDTO(order);
+        return orderDTO;
+    }
+
+    //Xuat hoa don
+
+    public OrderInvoiceDTO getOrderInvoice(Integer orderId) {
+        // Lấy Order từ database
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Lấy danh sách OrderDetails
+        List<OrderDetails> orderDetails = orderDetailsRepository.findOrderDetailsByOrderId(orderId);
+
+        // Tính toán total_amount
+        BigDecimal totalAmount = calculateTotalAmount(orderDetails, order.getShipping_fee());
+
+        // Cập nhật lại total_amount trong bảng Orders
+        order.setTotal_amount(totalAmount);
+        orderRepository.save(order);
+
+        // Cập nhật trạng thái Order thành "COMPLETE"
+        order.setStatus(OrderStatus.COMPLETE);
+        orderRepository.save(order);
+
+        // Cập nhật total_orders và total_spent trong bảng Customers
+        updateCustomerTotals(order, orderDetails);
+
+        // Tạo và trả về OrderInvoiceDTO
+        OrderInvoiceDTO orderInvoiceDTO = new OrderInvoiceDTO();
+        orderInvoiceDTO.setOrder_id(order.getOrder_id());
+        orderInvoiceDTO.setCustomer_name(order.getCustomer().getCustomer_name());
+        orderInvoiceDTO.setPayment_method(order.getPayment_method().name());
+        orderInvoiceDTO.setOrderDetails(convertToOrderDetailsDTO(orderDetails));
+        orderInvoiceDTO.setShipping_fee(order.getShipping_fee());
+        orderInvoiceDTO.setTotal_amount(totalAmount);
+
+        return orderInvoiceDTO;
+    }
+
+    private BigDecimal calculateTotalAmount(List<OrderDetails> orderDetails, BigDecimal shippingFee) {
+        return orderDetails.stream()
+                .map(OrderDetails::getUnit_price)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .subtract(shippingFee);
+    }
+
+    public void updateCustomerTotals(Order order, List<OrderDetails> orderDetails) {
+        Customer customer = order.getCustomer();
+
+        // Cập nhật total_orders
+        customer.setTotal_orders(customer.getTotal_orders().add(order.getTotal_amount()));
+
+        // Cập nhật total_points
+        BigDecimal totalPoints = orderDetails.stream()
+                .map(od -> BigDecimal.valueOf(od.getProductdetails().getPoints()).multiply(BigDecimal.valueOf(od.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        customer.setTotal_points(customer.getTotal_points().add(totalPoints));
+
+        customerRepository.save(customer);
+    }
+
+    private void updateProductDetailsQuantity(List<OrderDetails> orderDetails) {
+        for (OrderDetails orderDetail : orderDetails) {
+            ProductDetails productDetails = productDetailsRepository.findById(orderDetail.getProductdetails().getProduct_details_id())
+                    .orElseThrow(() -> new EntityNotFoundException("Product details not found with id: " + orderDetail.getProductdetails().getProduct_details_id()));
+
+            int newQuantity = productDetails.getQuantity() - orderDetail.getQuantity();
+            productDetails.setQuantity(newQuantity);
+            productDetailsRepository.save(productDetails);
+        }
+    }
+
+    private List<OrderDetailsDTO> convertToOrderDetailsDTO(List<OrderDetails> orderDetails) {
+        return orderDetails.stream()
+                .map(this::convertToOrderDetailsDTO)
+                .collect(Collectors.toList());
+    }
+
+    private OrderDetailsDTO convertToOrderDetailsDTO(OrderDetails orderDetails) {
+        OrderDetailsDTO orderDetailsDTO = new OrderDetailsDTO();
+        orderDetailsDTO.order_details_id = orderDetails.getOrder_details_id();
+        orderDetailsDTO.order_id = orderDetails.getOrder_id().getOrder_id();
+        orderDetailsDTO.product_id = orderDetails.getProduct().getProduct_id();
+        orderDetailsDTO.product_details_id = orderDetails.getProductdetails().getProduct_details_id();
+        orderDetailsDTO.quantity = orderDetails.getQuantity();
+        orderDetailsDTO.unit_price = orderDetails.getUnit_price();
+        orderDetailsDTO.discount = orderDetails.getDiscount();
+        return orderDetailsDTO;
     }
 }
