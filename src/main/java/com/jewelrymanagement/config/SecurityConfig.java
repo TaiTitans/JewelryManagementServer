@@ -36,10 +36,9 @@ public class SecurityConfig{
         logger.info("Configuring security filter chain");
         http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/manager/**").hasRole("MANAGER")
                         .requestMatchers("/api/common/**").hasAnyRole("STAFF", "MANAGER", "ADMIN")
                         .requestMatchers("/api/**").hasRole("ADMIN")
-                        .requestMatchers("/api/manager/**").hasRole("MANAGER")
-                        .requestMatchers("/api/staff/**").hasRole("STAFF")
                         .anyRequest().authenticated()
         ).csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

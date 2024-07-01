@@ -5,9 +5,9 @@
       <developerToolConfiguration developerToolId="jwt-encoder-decoder" id="3eb0de3e-1f40-4297-805a-3fdb4d6c4616" name="Workbench">
         <properties>
           <property key="headerText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;alg&quot;:&quot;HS512&quot;&#13;&#10;}" />
-          <property key="payloadText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;sub&quot;:&quot;32,admin&quot;,&#13;&#10;  &quot;iss&quot;:&quot;TitansDev&quot;,&#13;&#10;  &quot;roles&quot;:[&#13;&#10;    &quot;ROLE_ADMIN&quot;&#13;&#10;  ],&#13;&#10;  &quot;iat&quot;:1717777112,&#13;&#10;  &quot;exp&quot;:1717780712&#13;&#10;}" />
+          <property key="payloadText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;sub&quot;:&quot;33,quanli&quot;,&#13;&#10;  &quot;iss&quot;:&quot;TitansDev&quot;,&#13;&#10;  &quot;roles&quot;:[&#13;&#10;    &quot;ROLE_MANAGER&quot;&#13;&#10;  ],&#13;&#10;  &quot;iat&quot;:1719841493,&#13;&#10;  &quot;exp&quot;:1719845093&#13;&#10;}" />
           <property key="secret" type="SECRET" value="kotlin.String|SAVED_IN_KEYSTORE" />
-          <property key="encodedText" type="INPUT" value="kotlin.String|ew0KICAiYWxnIjoiSFM1MTIiDQp9.ew0KICAic3ViIjoiMzIsYWRtaW4iLA0KICAiaXNzIjoiVGl0YW5zRGV2IiwNCiAgInJvbGVzIjpbDQogICAgIlJPTEVfQURNSU4iDQogIF0sDQogICJpYXQiOjE3MTc3NzcxMTIsDQogICJleHAiOjE3MTc3ODA3MTINCn0.ZXcwS0lDQWlZV3huSWpvaVNGTTFNVElpRFFwOS4uQjh1LURWTkRtdlN2N1ptWC1QcXpxOGFoMVdxc2pJLXdOcm8zRTVnTlk4YTN3SEdxdnp3RS1EOV90SlI0dm9TT1dKQXNPc0gzQjNORzllYmMyd1J6MVE" />
+          <property key="encodedText" type="INPUT" value="kotlin.String|eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIzMyxxdWFubGkiLCJpc3MiOiJUaXRhbnNEZXYiLCJyb2xlcyI6WyJST0xFX01BTkFHRVIiXSwiaWF0IjoxNzE5ODQxNDkzLCJleHAiOjE3MTk4NDUwOTN9.rGDYwv2_ZEppcJemXLoXccgUzfoYoctNT2iixu3o8cUtNVUAp6P89qqUggj6pnufhJ9suBGxgLrBWMRQywsc3w" />
           <property key="privateKey" type="SECRET" value="kotlin.String|SAVED_IN_KEYSTORE" />
           <property key="algorithm" type="CONFIGURATION" value="dev.turingcomplete.intellijdevelopertoolsplugin._internal.tool.ui.converter.JwtEncoderDecoder$SignatureAlgorithm|HMAC512" />
         </properties>
